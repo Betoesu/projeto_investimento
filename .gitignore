@@ -1,0 +1,14 @@
+# Pastas de cache do Python
+__pycache__/
+*.pyc
+
+# Ambientes virtuais (caso use no futuro)
+venv/
+.venv/
+env/
+
+# Variáveis de ambiente (Segurança)
+.env
+
+# Arquivos gerados pelo seu código
+data/
