@@ -14,4 +14,3 @@ Pode ser salvo como um CSV ou arquivo TXT organizado
 
 ## A FAZERES ##
 - Interface explicativa a acessar leitor do qr code com botao para estar pronto
-
