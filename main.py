@@ -25,7 +25,7 @@ def executar_automacao():
     # 4. Resultado
     print(f"\nForam encontrados {len(dados_investimentos)} investimentos!\n")
     for item in dados_investimentos:
-        print(f"-> {item['produto']} | Taxa: {item['rendimento']} | Inv.Mínimo: {item['investimento_minimo']} | Isento de Imposto de Renda: {item["isento_ir"]} | Vencimento: {item["vencimento"]}")
+        print(f"-> {item['produto']} | Taxa: {item['rendimento']} | Inv.Mínimo: {item['investimento_minimo']} | Isento de Imposto de Renda: {item['isento_ir']} | Vencimento: {item['vencimento']}")
 
     criar_relatorio_txt(dados_investimentos)
 
