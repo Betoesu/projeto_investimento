@@ -12,3 +12,6 @@ env/
 
 # Arquivos gerados pelo seu código
 data/
+
+# Teste de Interface
+testar_interface.py

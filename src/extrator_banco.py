@@ -18,10 +18,13 @@ def iniciar_navegador():
 
 def realizar_login_por_qrcode(driver):
     driver.get("https://contadigital.inter.co/home")
-    resposta = input("Digite 'continuar' ao terminar de scanear o QR CODE: ").lower().strip()
+    # Criamos um "wait" exclusivo de 120 segundos para dar tempo do usuário pegar o celular
+    wait_login = WebDriverWait(driver, 120) 
 
-    while resposta != "continuar":
-        resposta = input("Digite exatamente 'continuar: '").lower().strip()
+    wait_login.until(EC.presence_of_element_located((By.XPATH, "//*[@id='header-ib']/div/div[2]/div/div/nav[5]/ul/li/a")))
+
+
+    time.sleep(3)
 
 def navegar_para_renda_fixa(wait):
     botao_investir = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='header-ib']/div/div[2]/div/div/nav[5]/ul/li/a")))
@@ -81,9 +84,16 @@ def aplicar_filtros(wait):
 def extrair_investimentos(driver,wait):
     """Extrai os dados e retorna uma lista de dicionários."""
 
-    #Aguarda site renderizar lista de investimentos
-    time.sleep(3)
+    # 1. ESPERA INTELIGENTE: O robô aguarda até o 1º cartão de investimento aparecer na tela
+    try:
+        xpath_primeiro_card = '(//div[@class="sc-kcGwyx lfvmlZ"]/div[@class="sc-edcLgS kUdxgb"])[1]'
+        wait.until(EC.presence_of_element_located((By.XPATH, xpath_primeiro_card)))
+    except Exception:
+        # Se passar o tempo limite e não achar nada, ele segue e retorna vazio (0 produtos)
+        pass
 
+    time.sleep(1.5)
+    
     lista_investimentos = driver.find_elements(By.XPATH, '//div[@class="sc-kcGwyx lfvmlZ"]/div[@class="sc-edcLgS kUdxgb"]')
     quantidade_investimentos = len(lista_investimentos)
 
