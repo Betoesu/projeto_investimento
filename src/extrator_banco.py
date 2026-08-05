@@ -5,6 +5,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
+def _clicar_elemento(wait, xpath):
+    """Função auxiliar que aguarda elemento ficar clicável e o clica"""
+    elemento = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+    elemento.click()
+
 def iniciar_navegador():
     """Configura e abre o navegador, retornando as instâncias necessárias."""
     options = webdriver.ChromeOptions()
@@ -18,70 +23,81 @@ def iniciar_navegador():
 
 def realizar_login_por_qrcode(driver):
     driver.get("https://contadigital.inter.co/home")
-    # Criamos um "wait" exclusivo de 120 segundos para dar tempo do usuário pegar o celular
+    # Criamos um "wait" exclusivo de 120 segundos para dar tempo do usuário pegar o celular e ler o QRCODE
     wait_login = WebDriverWait(driver, 120) 
 
     wait_login.until(EC.presence_of_element_located((By.XPATH, "//*[@id='header-ib']/div/div[2]/div/div/nav[5]/ul/li/a")))
 
-
     time.sleep(3)
 
 def navegar_para_renda_fixa(wait):
-    botao_investir = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='header-ib']/div/div[2]/div/div/nav[5]/ul/li/a")))
-    botao_investir.click()
+
+    #Clica no botão investir
+    _clicar_elemento(wait,'//span[contains(text(), "Investir")]' )  
+
+    #Caso apareça o erro de dados não cadastrados. Ele vai simplesmente fechar a aba, ir para o início e tentar novamente
     try:
-        botao_renda_fixa = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='root']/div[1]/div[3]/div[1]/div/div[2]/div/div/div[1]/section/button")))
-        botao_renda_fixa.click()
+        #Clica no botão que leva para renda fixa
+       _clicar_elemento(wait, '//span[contains(text(), "Renda Fixa")]')
+
     except:
 
         #Caso o botao de fechar troque de lugar
         try:
-            botao_fechar_dados_cadastrais = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div/div[1]/button")))
-            botao_fechar_dados_cadastrais.click()
+            #Botão de fechar aba de dados cadastrais
+            _clicar_elemento(wait,'/html/body/div[3]/div/div[1]/button')
+
         except:
-            botao_fechar_dados_cadastrais = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div/div[1]/button")))
-            botao_fechar_dados_cadastrais.click()
+            #Outro possível caminho para botão de fechar aba de dados cadastrais
+            _clicar_elemento(wait,'/html/body/div[2]/div/div[1]/button')
 
-        botao_inicio = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='header-ib']/div/div[2]/div/div/nav[1]/ul/li/a/span[2]")))
-        botao_inicio.click()
+        #Clica no botão de voltar para o início
+        _clicar_elemento(wait,'//span[text()="Início"]')
 
-        botao_investir = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='header-ib']/div/div[2]/div/div/nav[5]/ul/li/a")))
-        botao_investir.click()
+        #Clica no botão investir
+        _clicar_elemento(wait,'//span[contains(text(), "Investir")]' )
+
+        #Caso ainda assim o erro de dados não cadastrados continue ele tenta fazer o processo de ir para o inicio e voltar novamente
         try:
-            botao_renda_fixa = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='root']/div[1]/div[3]/div[1]/div/div[2]/div/div/div[1]/section/button")))
-            botao_renda_fixa.click()
-        except:
-            botao_investimento = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='header-ib']/div/div[2]/div/div/nav[5]/ul/li/div/div/div/ul/li[1]/button")))
-            botao_investimento.click()
+            #Clica no botão que leva para renda fixa
+            _clicar_elemento(wait, '//span[contains(text(), "Renda Fixa")]')
 
-            botao_renda_fixa = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='root']/div[1]/div[3]/div[1]/div/div[2]/div/div/div[1]/section/button")))
-            botao_renda_fixa.click()
+        except:
+            #Clica no botão de investimento
+            _clicar_elemento(wait, '//button[text()="Investimentos"]')
+
+            #Clica no botão que leva para renda fixa
+            _clicar_elemento(wait, '//span[contains(text(), "Renda Fixa")]')
 
 def aplicar_filtros(wait):
-        
-    botao_filtro = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='root']/div[1]/div[3]/div[1]/div[2]/div/div[1]/div/div[1]/div/button")))
-    botao_filtro.click()
 
-    botao_filtro_cdb = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='root']/div[1]/div[3]/div[1]/div[2]/div/div[1]/div/div[1]/div/div/div[1]/ul/li[1]/span")))
-    botao_filtro_cdb.click()
+    #Botão Filtro
+    #_clicar_elemento(wait, '//*[@id="root"]/div[1]/div[3]/div[1]/div[2]/div/div[1]/div/div[1]/div/button')
+    _clicar_elemento(wait, '//button[contains(text(), "Filtros")]')
 
-    botao_filtro_lci = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='root']/div[1]/div[3]/div[1]/div[2]/div/div[1]/div/div[1]/div/div/div[1]/ul/li[2]/span/span")))
-    botao_filtro_lci.click()
+    #Botão filtro CDB
+    #_clicar_elemento(wait, '//*[@id="root"]/div[1]/div[3]/div[1]/div[2]/div/div[1]/div/div[1]/div/div/div[1]/ul/li[1]/span')
+    _clicar_elemento(wait, '//span[contains(text(), "CDB")]')
 
-    botao_filtro_risco_muito_baixo = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div[1]/div[3]/div[1]/div[2]/div/div[1]/div/div[1]/div/div/div[5]/ul/li[1]/span/span')))
-    botao_filtro_risco_muito_baixo.click()
+    #Botão filtro LCI
+    #_clicar_elemento(wait, '//*[@id="root"]/div[1]/div[3]/div[1]/div[2]/div/div[1]/div/div[1]/div/div/div[1]/ul/li[2]/span/span')
+    _clicar_elemento(wait, '//span[contains(text(), "LCI")]')
 
-    botao_filtro_risco_baixo = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div[1]/div[3]/div[1]/div[2]/div/div[1]/div/div[1]/div/div/div[5]/ul/li[2]/span/span')))
-    botao_filtro_risco_baixo.click()
+    #Botão Filtro Risco muito Baixo
+    _clicar_elemento(wait, '//span[text()="Muito Baixo"]')
 
-    botao_filtro_risco_medio = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div[1]/div[3]/div[1]/div[2]/div/div[1]/div/div[1]/div/div/div[5]/ul/li[3]/span/span')))
-    botao_filtro_risco_medio.click()
+    #Botão Filtro Risco Baixo
+    _clicar_elemento(wait, '//span[text()="Baixo"]')
+
+    #Botão Filtro Risco Médio
+    _clicar_elemento(wait, '//span[text()="Médio"]')
 
     #Fechar aba Filtro
-    botao_produto_renda_fixa = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/span')))
-    botao_produto_renda_fixa.click()
+    #_clicar_elemento(wait, '//*[@id="root"]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/span')
+    _clicar_elemento(wait, '//span[text()="Produtos de Renda Fixa"]')
 
 def extrair_investimentos(driver,wait):
+
     """Extrai os dados e retorna uma lista de dicionários."""
 
     # 1. ESPERA INTELIGENTE: O robô aguarda até o 1º cartão de investimento aparecer na tela
