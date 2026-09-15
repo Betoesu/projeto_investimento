@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import requests
 import time
 
 def _clicar_elemento(wait, xpath):
@@ -96,60 +97,6 @@ def aplicar_filtros(wait):
     #_clicar_elemento(wait, '//*[@id="root"]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/span')
     _clicar_elemento(wait, '//span[text()="Produtos de Renda Fixa"]')
 
-# def extrair_investimentos(driver,wait):
-
-#     """Extrai os dados e retorna uma lista de dicionários."""
-
-#     # 1. ESPERA INTELIGENTE: O robô aguarda até o 1º cartão de investimento aparecer na tela
-#     try:
-#         xpath_primeiro_card = '(//div[@class="sc-POYre eWDoSs"]/div[@class="sc-grWwFn cTAPsa"])[1]'
-#         wait.until(EC.presence_of_element_located((By.XPATH, xpath_primeiro_card)))
-#     except Exception:
-#         # Se passar o tempo limite e não achar nada, ele segue e retorna vazio (0 produtos)
-#         pass
-
-#     time.sleep(1.5)
-    
-#     lista_investimentos = driver.find_elements(By.XPATH, '//div[@class="sc-POYre eWDoSs"]/div[@class="sc-grWwFn cTAPsa"]')
-#     quantidade_investimentos = len(lista_investimentos)
-
-#     dados_extraidos = []
-
-#     for i in range(1, quantidade_investimentos + 1):
-#         try:
-#             xpath_card_atual = f'(//div[@class="sc-POYre eWDoSs"]/div[@class="sc-grWwFn cTAPsa"])[{i}]'
-
-#             investimento = wait.until(EC.visibility_of_element_located((By.XPATH, xpath_card_atual)))
-           
-#             texto = investimento.find_element(By.XPATH, './/span[@class="sc-kLeMFj cNbGSK"]').text
-
-#             rendimento = investimento.find_element(By.XPATH, './/span[@class="sc-cBULEp cFVmFq"]').text
-
-#             inv_minimo = investimento.find_element(By.XPATH, './/section[@class="sc-ipiWPc UJOeJ"]//span[contains(text(), "R$")]').text.replace("\xa0", " ")
-
-#             selo_isencao = investimento.find_elements(By.XPATH, './/span[contains(text(), "Isento de Impostos")]')
-#             if len(selo_isencao) > 0:
-#                 isento_ir = True   #selo_isencao[0].text se quiser o texto
-#             else:
-#                 isento_ir = False
-
-#             vencimento = investimento.find_element(By.XPATH, './/section[@class="sc-ipiWPc UJOeJ"]//span[contains(text(), "/")]').text
-            
-            
-#             dados_extraidos.append({
-#                 "produto": texto,
-#                 "rendimento": rendimento,
-#                 "investimento_minimo": inv_minimo,
-#                 "isento_ir":isento_ir,
-#                 "vencimento":vencimento,
-#             })
-            
-            
-#         except Exception:
-#             continue
-
-#     return dados_extraidos
-
 def extrair_investimentos(driver, wait):
     """Extrai os dados e retorna uma lista de dicionários.
     Localiza cards e campos por texto/estrutura, não por classes CSS dinâmicas."""
@@ -202,3 +149,8 @@ def extrair_investimentos(driver, wait):
             continue
 
     return dados_extraidos
+
+def extrair_investimentos(wait):
+    pass
+
+    
