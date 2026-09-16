@@ -13,8 +13,6 @@ from src.extrator_banco import (
     iniciar_navegador, realizar_login_por_qrcode,
     navegar_para_renda_fixa, aplicar_filtros, extrair_investimentos
 )
-from src.gerador_relatorio import criar_relatorio_txt
-
 
 class App(ctk.CTk):
     def __init__(self):

@@ -13,7 +13,7 @@ Preciso somente de dados dos investimentos:
 Pode ser salvo como um CSV ou arquivo TXT organizado
 
 ## A FAZERES ##
-- Integração API
+- Arrumar interface com mudança em extrator_banco
 - Filtros na tela de resultados
 - Calculo Ciencia de dados. Clusterizar. (Consultar Bernardo)
 - Quando der erro de dados nao cadastrados trocar xpath, e se futuramente erro de extração de dados, trocar xpath
