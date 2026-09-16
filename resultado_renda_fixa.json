@@ -40,7 +40,6 @@
         },
         "tipoInvestidor": "GERAL"
     },
-    
     {
         "aplicacaoMinima": 50,
         "codigoModalidade": "LCI PRE 180",
@@ -122,51 +121,6 @@
             "descricao": "CRI"
         },
         "tipoInvestidor": "PROFISSIONAL"
-    },
-    {
-        "aplicacaoMinima": 938.71,
-        "codigoModalidade": null,
-        "dataResgate": "2029-01-15",
-        "detalhes": [
-            {
-                "rotulo": "Remuneração do distribuidor",
-                "valor": "0,53%"
-            },
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 938,72"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "15/01/2029"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "VERT COMPANHIA SECURITIZADORA",
-        "garantidoFgc": false,
-        "geraCreditoColateral": false,
-        "grauRisco": 2,
-        "grossUp": "Equivale a um CDB de até 20% a.a.",
-        "id": 67756,
-        "indexador": {
-            "descricao": "PRE"
-        },
-        "isentoImpostos": true,
-        "nome": "CRI DASA E124 S2 - 17% a.a.",
-        "resgate": "15/01/2029",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": 0.53,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "17% a.a.",
-        "tipo": {
-            "descricao": "CRI"
-        },
-        "tipoInvestidor": "GERAL"
     },
     {
         "aplicacaoMinima": 642.47,
@@ -384,51 +338,6 @@
         "tagInvestPro": null,
         "tagInvestidorQualificado": null,
         "taxa": "IPCA + 10% a.a.",
-        "tipo": {
-            "descricao": "CRA"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
-        "aplicacaoMinima": 876.58,
-        "codigoModalidade": null,
-        "dataResgate": "2031-02-15",
-        "detalhes": [
-            {
-                "rotulo": "Remuneração do distribuidor",
-                "valor": "0,81%"
-            },
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 876,59"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "15/02/2031"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "ECO SECURITIZADORA DE DIREITOS CREDITÓRIOS DO AGRONEGÓCIO S/A",
-        "garantidoFgc": false,
-        "geraCreditoColateral": false,
-        "grauRisco": 2,
-        "grossUp": "Equivale a um CDB de até 20% a.a.",
-        "id": 84575,
-        "indexador": {
-            "descricao": "PRE"
-        },
-        "isentoImpostos": true,
-        "nome": "CRA JSL E309 S1 - 17% a.a.",
-        "resgate": "15/02/2031",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": 0.81,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "17% a.a.",
         "tipo": {
             "descricao": "CRA"
         },
@@ -1119,47 +1028,6 @@
         "tipoInvestidor": "GERAL"
     },
     {
-        "aplicacaoMinima": 105.88,
-        "codigoModalidade": null,
-        "dataResgate": "2029-07-02",
-        "detalhes": [
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 105,89"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "02/07/2029"
-            },
-            {
-                "rotulo": "Resgate",
-                "valor": "Diário"
-            }
-        ],
-        "emissor": "BANCO D M G S BDMG",
-        "garantidoFgc": true,
-        "geraCreditoColateral": false,
-        "grauRisco": 1,
-        "grossUp": "Equivale a um CDB de até 108,39% do CDI",
-        "id": 263352,
-        "indexador": {
-            "descricao": "DI"
-        },
-        "isentoImpostos": true,
-        "nome": "LCA BDMG LIQUIDEZ - 84% do CDI",
-        "resgate": "Diário",
-        "resgateAntecipadoHabilitado": false,
-        "sort": null,
-        "spread": null,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "84% do CDI",
-        "tipo": {
-            "descricao": "LCA"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
         "aplicacaoMinima": 1000,
         "codigoModalidade": null,
         "dataResgate": "2027-06-14",
@@ -1246,13 +1114,13 @@
         "tipoInvestidor": "GERAL"
     },
     {
-        "aplicacaoMinima": 705.2,
+        "aplicacaoMinima": 700.93,
         "codigoModalidade": null,
         "dataResgate": "2029-07-01",
         "detalhes": [
             {
                 "rotulo": "Inv. mínimo",
-                "valor": "R$ 705,21"
+                "valor": "R$ 700,94"
             },
             {
                 "rotulo": "Vencimento",
@@ -1273,14 +1141,14 @@
             "descricao": "PRE"
         },
         "isentoImpostos": false,
-        "nome": "LTN - JUL/2029 - 13,48% a.a.",
+        "nome": "LTN - JUL/2029 - 13,73% a.a.",
         "resgate": "01/07/2029",
         "resgateAntecipadoHabilitado": true,
         "sort": null,
         "spread": null,
         "tagInvestPro": null,
         "tagInvestidorQualificado": null,
-        "taxa": "13,48% a.a.",
+        "taxa": "13,73% a.a.",
         "tipo": {
             "descricao": "LTN"
         },
@@ -1572,51 +1440,6 @@
             "descricao": "CRI"
         },
         "tipoInvestidor": "GERAL"
-    },
-    {
-        "aplicacaoMinima": 954.69,
-        "codigoModalidade": null,
-        "dataResgate": "2028-02-15",
-        "detalhes": [
-            {
-                "rotulo": "Remuneração do distribuidor",
-                "valor": "0,5%"
-            },
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 954,69"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "15/02/2028"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "VIRGO COMPANHIA DE SECURITIZAÇÃO",
-        "garantidoFgc": false,
-        "geraCreditoColateral": false,
-        "grauRisco": 1,
-        "grossUp": "Equivale a um CDB de até 19,01% a.a.",
-        "id": 89081,
-        "indexador": {
-            "descricao": "PRE"
-        },
-        "isentoImpostos": true,
-        "nome": "CRI SOMA E138 S2 - 15,68% a.a.",
-        "resgate": "15/02/2028",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": 0.5,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": "Investidor Qualificado",
-        "taxa": "15,68% a.a.",
-        "tipo": {
-            "descricao": "CRI"
-        },
-        "tipoInvestidor": "QUALIFICADO"
     },
     {
         "aplicacaoMinima": 1042.41,
@@ -5986,51 +5809,6 @@
         "tagInvestPro": null,
         "tagInvestidorQualificado": "Investidor Qualificado",
         "taxa": "IPCA + 10,76% a.a.",
-        "tipo": {
-            "descricao": "CRI"
-        },
-        "tipoInvestidor": "QUALIFICADO"
-    },
-    {
-        "aplicacaoMinima": 0.54,
-        "codigoModalidade": null,
-        "dataResgate": "2033-03-15",
-        "detalhes": [
-            {
-                "rotulo": "Remuneração do distribuidor",
-                "valor": "0,3%"
-            },
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 0,54"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "15/03/2033"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "TRUE SECURITIZADORA S/A",
-        "garantidoFgc": false,
-        "geraCreditoColateral": false,
-        "grauRisco": 4,
-        "grossUp": "Equivale a um IPCA + 12,58% a.a. não isento",
-        "id": 81072,
-        "indexador": {
-            "descricao": "IPCA"
-        },
-        "isentoImpostos": true,
-        "nome": "CRI MRV FLEX E328 S1 - IPCA + 10,69% a.a.",
-        "resgate": "15/03/2033",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": 0.3,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": "Investidor Qualificado",
-        "taxa": "IPCA + 10,69% a.a.",
         "tipo": {
             "descricao": "CRI"
         },
@@ -11842,51 +11620,6 @@
         "tipoInvestidor": "GERAL"
     },
     {
-        "aplicacaoMinima": 891.18,
-        "codigoModalidade": null,
-        "dataResgate": "2031-03-17",
-        "detalhes": [
-            {
-                "rotulo": "Remuneração do distribuidor",
-                "valor": "0,3%"
-            },
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 891,19"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "17/03/2031"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "ECO SECURITIZADORA DE DIREITOS CREDITÓRIOS DO AGRONEGÓCIO S/A",
-        "garantidoFgc": false,
-        "geraCreditoColateral": false,
-        "grauRisco": 2,
-        "grossUp": "Equivale a um CDB de até 18,53% a.a.",
-        "id": 88913,
-        "indexador": {
-            "descricao": "PRE"
-        },
-        "isentoImpostos": true,
-        "nome": "CRA MARFRIG E318 S2 - 15,75% a.a.",
-        "resgate": "17/03/2031",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": 0.3,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "15,75% a.a.",
-        "tipo": {
-            "descricao": "CRA"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
         "aplicacaoMinima": 958.12,
         "codigoModalidade": null,
         "dataResgate": "2034-03-15",
@@ -12331,51 +12064,6 @@
         "tagInvestPro": null,
         "tagInvestidorQualificado": "Investidor Qualificado",
         "taxa": "CDI + 2,05% a.a.",
-        "tipo": {
-            "descricao": "CRA"
-        },
-        "tipoInvestidor": "QUALIFICADO"
-    },
-    {
-        "aplicacaoMinima": 874.12,
-        "codigoModalidade": null,
-        "dataResgate": "2031-03-17",
-        "detalhes": [
-            {
-                "rotulo": "Remuneração do distribuidor",
-                "valor": "0,5%"
-            },
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 874,12"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "17/03/2031"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "VIRGO COMPANHIA DE SECURITIZAÇÃO",
-        "garantidoFgc": false,
-        "geraCreditoColateral": false,
-        "grauRisco": 2,
-        "grossUp": "Equivale a um CDB de até 19,41% a.a.",
-        "id": 83116,
-        "indexador": {
-            "descricao": "PRE"
-        },
-        "isentoImpostos": true,
-        "nome": "CRA MINERVA E197 S3 - 16,5% a.a.",
-        "resgate": "17/03/2031",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": 0.5,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": "Investidor Qualificado",
-        "taxa": "16,5% a.a.",
         "tipo": {
             "descricao": "CRA"
         },
@@ -13276,51 +12964,6 @@
         "tagInvestPro": null,
         "tagInvestidorQualificado": "Investidor Qualificado",
         "taxa": "16,53% a.a.",
-        "tipo": {
-            "descricao": "CRA"
-        },
-        "tipoInvestidor": "QUALIFICADO"
-    },
-    {
-        "aplicacaoMinima": 998.16,
-        "codigoModalidade": null,
-        "dataResgate": "2034-09-15",
-        "detalhes": [
-            {
-                "rotulo": "Remuneração do distribuidor",
-                "valor": "0,45%"
-            },
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 998,16"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "15/09/2034"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "VIRGO COMPANHIA DE SECURITIZAÇÃO",
-        "garantidoFgc": false,
-        "geraCreditoColateral": false,
-        "grauRisco": 3,
-        "grossUp": "Equivale a um IPCA + 9,84% a.a. não isento",
-        "id": 104383,
-        "indexador": {
-            "descricao": "IPCA"
-        },
-        "isentoImpostos": true,
-        "nome": "CRA SEARA (JBS) E218 S2 - IPCA + 8,36% a.a.",
-        "resgate": "15/09/2034",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": 0.45,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": "Investidor Qualificado",
-        "taxa": "IPCA + 8,36% a.a.",
         "tipo": {
             "descricao": "CRA"
         },
@@ -14401,51 +14044,6 @@
         "tagInvestPro": null,
         "tagInvestidorQualificado": "Investidor Qualificado",
         "taxa": "IPCA + 7,85% a.a.",
-        "tipo": {
-            "descricao": "CRA"
-        },
-        "tipoInvestidor": "QUALIFICADO"
-    },
-    {
-        "aplicacaoMinima": 859.32,
-        "codigoModalidade": null,
-        "dataResgate": "2031-02-17",
-        "detalhes": [
-            {
-                "rotulo": "Remuneração do distribuidor",
-                "valor": "0,3%"
-            },
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 859,33"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "17/02/2031"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "VIRGO COMPANHIA DE SECURITIZAÇÃO",
-        "garantidoFgc": false,
-        "geraCreditoColateral": false,
-        "grauRisco": 5,
-        "grossUp": "Equivale a um CDB de até 22,26% a.a.",
-        "id": 64629,
-        "indexador": {
-            "descricao": "PRE"
-        },
-        "isentoImpostos": true,
-        "nome": "CRA VICUNHA E186 S2 - 18,92% a.a.",
-        "resgate": "17/02/2031",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": 0.3,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": "Investidor Qualificado",
-        "taxa": "18,92% a.a.",
         "tipo": {
             "descricao": "CRA"
         },
@@ -17557,51 +17155,6 @@
         "tipoInvestidor": "GERAL"
     },
     {
-        "aplicacaoMinima": 0.93,
-        "codigoModalidade": null,
-        "dataResgate": "2034-09-15",
-        "detalhes": [
-            {
-                "rotulo": "Remuneração do distribuidor",
-                "valor": "0,3%"
-            },
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 0,93"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "15/09/2034"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "ÁGUAS DO RIO 4 SPE S/A",
-        "garantidoFgc": false,
-        "geraCreditoColateral": false,
-        "grauRisco": 2,
-        "grossUp": "Equivale a um IPCA + 13,74% a.a. não isento",
-        "id": 90116,
-        "indexador": {
-            "descricao": "IPCA"
-        },
-        "isentoImpostos": true,
-        "nome": "DEB ÁGUAS DO RIO (AEGEA) - IPCA + 11,68% a.a.",
-        "resgate": "15/09/2034",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": 0.3,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": "Investidor Qualificado",
-        "taxa": "IPCA + 11,68% a.a.",
-        "tipo": {
-            "descricao": "DEBENTURES"
-        },
-        "tipoInvestidor": "QUALIFICADO"
-    },
-    {
         "aplicacaoMinima": 9.24,
         "codigoModalidade": null,
         "dataResgate": "2042-01-15",
@@ -18059,47 +17612,6 @@
         "tagInvestPro": null,
         "tagInvestidorQualificado": null,
         "taxa": "111% do CDI",
-        "tipo": {
-            "descricao": "CDB"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
-        "aplicacaoMinima": 121.72,
-        "codigoModalidade": null,
-        "dataResgate": "2028-05-15",
-        "detalhes": [
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 121,73"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "15/05/2028"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "BANCO ARBI S.A.",
-        "garantidoFgc": true,
-        "geraCreditoColateral": false,
-        "grauRisco": 2,
-        "grossUp": null,
-        "id": 130782,
-        "indexador": {
-            "descricao": "DI"
-        },
-        "isentoImpostos": false,
-        "nome": "CDB ARBI - 114% do CDI",
-        "resgate": "15/05/2028",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": null,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "114% do CDI",
         "tipo": {
             "descricao": "CDB"
         },
@@ -19090,35 +18602,35 @@
         "tipoInvestidor": "GERAL"
     },
     {
-        "aplicacaoMinima": 104.17,
+        "aplicacaoMinima": 1052.92,
         "codigoModalidade": null,
-        "dataResgate": "2028-06-26",
+        "dataResgate": "2028-05-22",
         "detalhes": [
             {
                 "rotulo": "Inv. mínimo",
-                "valor": "R$ 104,17"
+                "valor": "R$ 1.052,92"
             },
             {
                 "rotulo": "Vencimento",
-                "valor": "26/06/2028"
+                "valor": "22/05/2028"
             },
             {
                 "rotulo": "Resgate Antecipado",
                 "valor": "Elegível"
             }
         ],
-        "emissor": "DM FINANCEIRA S.A.",
+        "emissor": "DM FINANCEIRA S A CREDITO FINANCIAM",
         "garantidoFgc": true,
         "geraCreditoColateral": false,
         "grauRisco": 2,
         "grossUp": null,
-        "id": 261045,
+        "id": 247208,
         "indexador": {
             "descricao": "DI"
         },
         "isentoImpostos": false,
         "nome": "CDB DM FINANCEIRA - 114% do CDI",
-        "resgate": "26/06/2028",
+        "resgate": "22/05/2028",
         "resgateAntecipadoHabilitado": true,
         "sort": null,
         "spread": null,
@@ -19377,47 +18889,6 @@
         "tipoInvestidor": "GERAL"
     },
     {
-        "aplicacaoMinima": 104.9,
-        "codigoModalidade": null,
-        "dataResgate": "2028-04-06",
-        "detalhes": [
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 104,90"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "06/04/2028"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "BANCO GUANABARA S/A",
-        "garantidoFgc": true,
-        "geraCreditoColateral": false,
-        "grauRisco": 1,
-        "grossUp": null,
-        "id": 234609,
-        "indexador": {
-            "descricao": "DI"
-        },
-        "isentoImpostos": false,
-        "nome": "CDB GUANABARA - 114% do CDI",
-        "resgate": "06/04/2028",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": null,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "114% do CDI",
-        "tipo": {
-            "descricao": "CDB"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
         "aplicacaoMinima": 100000,
         "codigoModalidade": null,
         "dataResgate": "2028-09-06",
@@ -19584,6 +19055,43 @@
     {
         "aplicacaoMinima": 100.3,
         "codigoModalidade": null,
+        "dataResgate": "2026-09-21",
+        "detalhes": [
+            {
+                "rotulo": "Inv. mínimo",
+                "valor": "R$ 100,31"
+            },
+            {
+                "rotulo": "Vencimento",
+                "valor": "21/09/2026"
+            }
+        ],
+        "emissor": "BANCO INTER",
+        "garantidoFgc": true,
+        "geraCreditoColateral": false,
+        "grauRisco": 1,
+        "grossUp": null,
+        "id": 297534,
+        "indexador": {
+            "descricao": "DI"
+        },
+        "isentoImpostos": false,
+        "nome": "CDB INTER - PRAZO FECHADO - 100,5% do CDI",
+        "resgate": "21/09/2026",
+        "resgateAntecipadoHabilitado": false,
+        "sort": null,
+        "spread": null,
+        "tagInvestPro": null,
+        "tagInvestidorQualificado": null,
+        "taxa": "100,5% do CDI",
+        "tipo": {
+            "descricao": "CDB"
+        },
+        "tipoInvestidor": "GERAL"
+    },
+    {
+        "aplicacaoMinima": 100.3,
+        "codigoModalidade": null,
         "dataResgate": "2026-09-23",
         "detalhes": [
             {
@@ -19619,17 +19127,17 @@
         "tipoInvestidor": "GERAL"
     },
     {
-        "aplicacaoMinima": 100.35,
+        "aplicacaoMinima": 100.31,
         "codigoModalidade": null,
-        "dataResgate": "2026-10-05",
+        "dataResgate": "2027-01-15",
         "detalhes": [
             {
                 "rotulo": "Inv. mínimo",
-                "valor": "R$ 100,36"
+                "valor": "R$ 100,32"
             },
             {
                 "rotulo": "Vencimento",
-                "valor": "05/10/2026"
+                "valor": "15/01/2027"
             }
         ],
         "emissor": "BANCO INTER",
@@ -19637,50 +19145,13 @@
         "geraCreditoColateral": false,
         "grauRisco": 1,
         "grossUp": null,
-        "id": 297242,
-        "indexador": {
-            "descricao": "DI"
-        },
-        "isentoImpostos": false,
-        "nome": "CDB INTER - PRAZO FECHADO - 100,5% do CDI",
-        "resgate": "05/10/2026",
-        "resgateAntecipadoHabilitado": false,
-        "sort": null,
-        "spread": null,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "100,5% do CDI",
-        "tipo": {
-            "descricao": "CDB"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
-        "aplicacaoMinima": 100.36,
-        "codigoModalidade": null,
-        "dataResgate": "2027-01-04",
-        "detalhes": [
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 100,37"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "04/01/2027"
-            }
-        ],
-        "emissor": "BANCO INTER",
-        "garantidoFgc": true,
-        "geraCreditoColateral": false,
-        "grauRisco": 1,
-        "grossUp": null,
-        "id": 297179,
+        "id": 297410,
         "indexador": {
             "descricao": "DI"
         },
         "isentoImpostos": false,
         "nome": "CDB INTER - PRAZO FECHADO - 103% do CDI",
-        "resgate": "04/01/2027",
+        "resgate": "15/01/2027",
         "resgateAntecipadoHabilitado": false,
         "sort": null,
         "spread": null,
@@ -19732,7 +19203,7 @@
     {
         "aplicacaoMinima": 100.3,
         "codigoModalidade": null,
-        "dataResgate": "2027-08-23",
+        "dataResgate": "2027-07-09",
         "detalhes": [
             {
                 "rotulo": "Inv. mínimo",
@@ -19740,7 +19211,7 @@
             },
             {
                 "rotulo": "Vencimento",
-                "valor": "23/08/2027"
+                "valor": "09/07/2027"
             }
         ],
         "emissor": "BANCO INTER",
@@ -19748,13 +19219,13 @@
         "geraCreditoColateral": false,
         "grauRisco": 1,
         "grossUp": null,
-        "id": 297436,
+        "id": 297359,
         "indexador": {
             "descricao": "DI"
         },
         "isentoImpostos": false,
         "nome": "CDB INTER - PRAZO FECHADO - 102% do CDI",
-        "resgate": "23/08/2027",
+        "resgate": "09/07/2027",
         "resgateAntecipadoHabilitado": false,
         "sort": null,
         "spread": null,
@@ -19767,9 +19238,9 @@
         "tipoInvestidor": "GERAL"
     },
     {
-        "aplicacaoMinima": 100.32,
+        "aplicacaoMinima": 100.31,
         "codigoModalidade": null,
-        "dataResgate": "2027-11-23",
+        "dataResgate": "2027-11-24",
         "detalhes": [
             {
                 "rotulo": "Inv. mínimo",
@@ -19777,7 +19248,7 @@
             },
             {
                 "rotulo": "Vencimento",
-                "valor": "23/11/2027"
+                "valor": "24/11/2027"
             }
         ],
         "emissor": "BANCO INTER",
@@ -19785,13 +19256,13 @@
         "geraCreditoColateral": false,
         "grauRisco": 1,
         "grossUp": null,
-        "id": 297371,
+        "id": 297473,
         "indexador": {
             "descricao": "DI"
         },
         "isentoImpostos": false,
         "nome": "CDB INTER - PRAZO FECHADO - 104% do CDI",
-        "resgate": "23/11/2027",
+        "resgate": "24/11/2027",
         "resgateAntecipadoHabilitado": false,
         "sort": null,
         "spread": null,
@@ -19909,88 +19380,6 @@
         "tagInvestPro": null,
         "tagInvestidorQualificado": null,
         "taxa": "103% do CDI",
-        "tipo": {
-            "descricao": "CDB"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
-        "aplicacaoMinima": 120.85,
-        "codigoModalidade": null,
-        "dataResgate": "2027-06-14",
-        "detalhes": [
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 120,86"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "14/06/2027"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "LEBES FINANCEIRA S.A. - CREDITO, FI",
-        "garantidoFgc": true,
-        "geraCreditoColateral": false,
-        "grauRisco": 2,
-        "grossUp": null,
-        "id": 139492,
-        "indexador": {
-            "descricao": "DI"
-        },
-        "isentoImpostos": false,
-        "nome": "CDB LEBES FINANCEIRA - 114% do CDI",
-        "resgate": "14/06/2027",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": null,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "114% do CDI",
-        "tipo": {
-            "descricao": "CDB"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
-        "aplicacaoMinima": 117.71,
-        "codigoModalidade": null,
-        "dataResgate": "2027-08-11",
-        "detalhes": [
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 117,71"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "11/08/2027"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "LEBES FINANCEIRA S.A. - CREDITO, FI",
-        "garantidoFgc": true,
-        "geraCreditoColateral": false,
-        "grauRisco": 2,
-        "grossUp": null,
-        "id": 153727,
-        "indexador": {
-            "descricao": "DI"
-        },
-        "isentoImpostos": false,
-        "nome": "CDB LEBES FINANCEIRA - 114% do CDI",
-        "resgate": "11/08/2027",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": null,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "114% do CDI",
         "tipo": {
             "descricao": "CDB"
         },
@@ -20120,47 +19509,6 @@
         "tipoInvestidor": "GERAL"
     },
     {
-        "aplicacaoMinima": 98.58,
-        "codigoModalidade": null,
-        "dataResgate": "2029-07-30",
-        "detalhes": [
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 98,59"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "30/07/2029"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "NEON FINANCEIRA - CREDITO, FINANCIA",
-        "garantidoFgc": true,
-        "geraCreditoColateral": false,
-        "grauRisco": 3,
-        "grossUp": null,
-        "id": 277323,
-        "indexador": {
-            "descricao": "DI"
-        },
-        "isentoImpostos": false,
-        "nome": "CDB NEON - 116% do CDI",
-        "resgate": "30/07/2029",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": null,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "116% do CDI",
-        "tipo": {
-            "descricao": "CDB"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
         "aplicacaoMinima": 100,
         "codigoModalidade": null,
         "dataResgate": "2029-09-17",
@@ -20278,47 +19626,6 @@
         "tagInvestPro": null,
         "tagInvestidorQualificado": null,
         "taxa": "116% do CDI",
-        "tipo": {
-            "descricao": "CDB"
-        },
-        "tipoInvestidor": "GERAL"
-    },
-    {
-        "aplicacaoMinima": 135.83,
-        "codigoModalidade": null,
-        "dataResgate": "2026-09-30",
-        "detalhes": [
-            {
-                "rotulo": "Inv. mínimo",
-                "valor": "R$ 135,84"
-            },
-            {
-                "rotulo": "Vencimento",
-                "valor": "30/09/2026"
-            },
-            {
-                "rotulo": "Resgate Antecipado",
-                "valor": "Elegível"
-            }
-        ],
-        "emissor": "QISTA S.A. - CREDITO, FINANCIAMENTO",
-        "garantidoFgc": true,
-        "geraCreditoColateral": false,
-        "grauRisco": 2,
-        "grossUp": null,
-        "id": 89944,
-        "indexador": {
-            "descricao": "DI"
-        },
-        "isentoImpostos": false,
-        "nome": "CDB QISTA - 114% do CDI",
-        "resgate": "30/09/2026",
-        "resgateAntecipadoHabilitado": true,
-        "sort": null,
-        "spread": null,
-        "tagInvestPro": null,
-        "tagInvestidorQualificado": null,
-        "taxa": "114% do CDI",
         "tipo": {
             "descricao": "CDB"
         },

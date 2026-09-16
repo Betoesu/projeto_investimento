@@ -39,7 +39,8 @@ except TimeoutException:
 print("Login detectado com sucesso! Indo para renda fixa...")
 
 driver.requests.clear() # limpa o histórico pra não pegar lixo de antes
-navegar_para_renda_fixa(wait)
+
+# navegar_para_renda_fixa(wait)
 
 print("\nCapturando tokens...")
 try:
@@ -84,22 +85,28 @@ url_api = "https://cd.web.bancointer.com.br/ib-pfj/investimentos/v2/rendas-fixas
 
   
 resultado = driver.execute_async_script(js_code, url_api, auth_header, mag_id)
-data = resultado["data", {}]
+data = resultado["data"]
 
 if resultado.get("success"):
     with open(ARQUIVO_SAIDA, "w", encoding="utf-8") as arquivo:
         json.dump(data, arquivo, ensure_ascii=False, indent=4)
     print("Sucesso! Dados salvos.")
 
-    for investimento in data: 
-        if data["grauRisco"] == 1 or 2 or 3 and data["indexador"]["descricacao"] == "DI" or "LCI" or "LCA":
-            nome = data.get("nome", "")
-            taxa = data.get("taxa", 0)
-            inv_min = data.get("aplicacaoMinima", 0)
-            isento_ir = data.get("isentoImpostos", None)
-            vencimento = "/".join(data.get("dataResgate", "").split("-")[::-1])
+    with open("investimentos.txt", "w", encoding="utf-8") as arquivo:
+        for investimento in data: 
 
-    
+            grau_risco = investimento.get("grauRisco")
+            indexador = investimento.get("indexador", {}).get("descricao", "")
 
+            if grau_risco in [1,2,3] and indexador in ["DI", "LCI", "LCA"]:
+                nome = investimento.get("nome", "")
+                taxa = investimento.get("taxa", 0)
+                inv_min = investimento.get("aplicacaoMinima", 0)
+                isento_ir = investimento.get("isentoImpostos", None)
+                vencimento = "/".join(investimento.get("dataResgate", "").split("-")[::-1])
+
+                arquivo.write(f"{nome} | Taxa: {taxa} | Inv.Mínimo: {inv_min} | Isento de Imposto de Renda: {isento_ir} | Vencimento: {vencimento}\n")
+
+    print("TXT gerado com sucesso!")
 else:
     print("Erro:", resultado.get("error"))
