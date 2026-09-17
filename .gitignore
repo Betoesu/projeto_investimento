@@ -15,3 +15,7 @@ data/
 
 # Teste de Interface
 testar_interface.py
+
+#Arquivos de investimento
+investimentos.txt
+resultado_renda_fixa.json

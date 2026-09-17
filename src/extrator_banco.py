@@ -17,7 +17,7 @@ def iniciar_navegador():
     options.add_argument("--start-maximized")
 
     driver = webdriver.Chrome(options=options)
-    wait = WebDriverWait(driver, 30)
+    wait = WebDriverWait(driver, 60)
 
     driver.get("https://contadigital.inter.co/investimento/renda-fixa")
 

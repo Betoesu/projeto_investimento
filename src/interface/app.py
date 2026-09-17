@@ -10,8 +10,8 @@ from .tela_carregamento import TelaCarregamento
 
 import threading
 from src.extrator_banco import (
-    iniciar_navegador, realizar_login_por_qrcode,
-    navegar_para_renda_fixa, aplicar_filtros, extrair_investimentos
+    iniciar_navegador, verificar_login_por_qrcode,
+    gerar_relatorio, extrair_investimentos
 )
 
 class App(ctk.CTk):
@@ -93,7 +93,7 @@ class App(ctk.CTk):
                 driver, wait = iniciar_navegador()
                 
                 # 1. Login Automático
-                realizar_login_por_qrcode(driver)
+                verificar_login_por_qrcode(wait)
 
                 # GATILHO
                 self.after(0, self._trazer_para_frente)
@@ -102,19 +102,19 @@ class App(ctk.CTk):
             
                 # Passo 0: Navegação (33% na barra)
                 self.after(0, lambda: self.tela_carregamento.atualizar_etapa(0, 0.33))
-                navegar_para_renda_fixa(wait)
                 
                 # Passo 1: Filtros (66% na barra)
                 self.after(0, lambda: self.tela_carregamento.atualizar_etapa(1, 0.66))
-                aplicar_filtros(wait)
                 
                 # Passo 2: Extração (90% na barra)
                 self.after(0, lambda: self.tela_carregamento.atualizar_etapa(2, 0.90))
-                dados = extrair_investimentos(driver, wait)
+                dados = extrair_investimentos(driver)
+                
                 
                 # Concluído! Enche a barra, fecha o Chrome e exibe os resultados
                 self.after(0, lambda: self.tela_carregamento.atualizar_etapa(2, 1.0))
                 driver.quit() 
+                gerar_relatorio(dados)
                 
                 self.after(1000, lambda: self.exibir_resultados(dados))
                 
