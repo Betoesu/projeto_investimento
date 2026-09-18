@@ -19,5 +19,4 @@ testar_interface.py
 teste_api.ipynb
 
 #Arquivos de investimento
-investimentos.txt
-resultado_renda_fixa.json
+investimentos*.txt
