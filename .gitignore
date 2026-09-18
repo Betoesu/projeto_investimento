@@ -13,8 +13,10 @@ env/
 # Arquivos gerados pelo seu código
 data/
 
-# Teste de Interface
+# Testes
+tests/
 testar_interface.py
+teste_api.ipynb
 
 #Arquivos de investimento
 investimentos.txt

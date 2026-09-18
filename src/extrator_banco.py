@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 import json
 import requests
+import datetime
 
 URL_RENDA_FIXA = "rendas-fixas/produtos"
 ARQUIVO_SAIDA = "resultado_renda_fixa.json"
@@ -58,23 +59,3 @@ def extrair_investimentos(driver):
     data = resultado.json()
 
     return data
-
-def gerar_relatorio(data):
-    # Salva JSON completo
-    with open(ARQUIVO_SAIDA, "w", encoding="utf-8") as arquivo:
-        json.dump(data, arquivo, ensure_ascii=False, indent=4)
-    print(f"JSON salvo em {ARQUIVO_SAIDA}")
-
-    # Salva TXT filtrado
-    count = 0
-    with open("investimentos.txt", "w", encoding="utf-8") as arquivo:
-        for investimento in data:
-            if investimento.get("grauRisco") in [1, 2, 3] and investimento.get("tipo", {}).get("descricao") in [ "LCI", "LCA", "CDB"]:
-                nome = investimento.get("nome", "")
-                taxa = investimento.get("taxa", 0)
-                inv_min = investimento.get("aplicacaoMinima", 0)
-                isento_ir = investimento.get("isentoImpostos", None)
-                vencimento = "/".join(investimento.get("dataResgate", "").split("-")[::-1])
-
-                arquivo.write(f"{nome} | Taxa: {taxa} | Inv.Mínimo: {inv_min} | Isento de Imposto de Renda: {isento_ir} | Vencimento: {vencimento}\n")
-                count += 1
