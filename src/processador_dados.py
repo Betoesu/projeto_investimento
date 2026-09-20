@@ -1,1 +1,0 @@
-# Lida apenas com a limpeza e cálculos matemáticos
