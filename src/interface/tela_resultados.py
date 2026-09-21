@@ -44,6 +44,9 @@ class TelaResultados(ctk.CTkFrame):
 
     def __init__(self, master, **kwargs):
         super().__init__(master, fg_color=tema.BG, corner_radius=0, **kwargs)
+
+        self.winfo_toplevel().geometry("1200x700")
+
         self._dados = []
         self._montar()
 
@@ -77,38 +80,47 @@ class TelaResultados(ctk.CTkFrame):
         sep.pack(fill="x", padx=28, pady=(12, 0))
 
         # Cartão da tabela
-        cartao = ctk.CTkFrame(self, fg_color=tema.CARD_BG, corner_radius=12)
-        cartao.pack(fill="both", expand=True, padx=28, pady=(16, 0))
+        self._cartao = ctk.CTkFrame(self, fg_color=tema.CARD_BG, corner_radius=12)
+        self._cartao.pack(fill="both", expand=True, padx=28, pady=(16, 0))
+        cartao = self._cartao
 
-        for i, (_, _, peso) in enumerate(CAMPOS):
-            cartao.grid_columnconfigure(i, weight=peso)
+        cartao.grid_columnconfigure(0, weight=1)
         cartao.grid_rowconfigure(1, weight=1)
+        cartao.grid_rowconfigure(0, minsize=48)
 
+        # Cabeçalho da tabela.
+        # Fica num tk.Frame próprio (padx em pixels reais) e usa as MESMAS colunas
+        # (pesos + uniform) das linhas de dados. Assim cada título fica exatamente
+        # acima da sua coluna. A faixa horizontal é ajustada em _alinhar_cabecalho.
+        self._cab = tk.Frame(cartao, bg=tema.CARD_BG, highlightthickness=0, bd=0)
+        self._cab.grid(row=0, column=0, sticky="nsew")
 
-       # Cabeçalho da tabela
-        for i, (_, rotulo, _) in enumerate(CAMPOS):
+        for i, (_, rotulo, peso) in enumerate(CAMPOS):
+            self._cab.grid_columnconfigure(i, weight=peso, uniform="cols")
             ctk.CTkLabel(
-                cartao,
+                self._cab,
                 text=rotulo,
                 font=tema.FONTE_TABELA_H,
                 text_color=tema.TEXTO_MUTED,
-            ).grid(row=0, column=i, sticky="w", padx=12, pady=(16, 14)) # Aumentamos o pady inferior para 14
+                anchor="w",
+                width=0,
+            ).grid(row=0, column=i, sticky="ew", padx=12, pady=(16, 14))
 
-        # Linha separadora
+        # Linha separadora (South, East, West: cola no fundo da linha 0)
         sep2 = tk.Frame(cartao, bg=tema.BORDA, height=1)
-        # O segredo está no sticky="sew" (South, East, West). O 's' joga a linha pro fundo!
-        sep2.grid(row=0, column=0, columnspan=len(CAMPOS),
-                  sticky="sew", padx=12, pady=0)
-                  
-        cartao.grid_rowconfigure(0, minsize=48) # Aumentamos levemente a altura mínima do cabeçalho
+        sep2.grid(row=0, column=0, sticky="sew", padx=12, pady=0)
 
         self._tabela = ctk.CTkScrollableFrame(cartao, fg_color="transparent")
-        self._tabela.grid(row=1, column=0, columnspan=len(CAMPOS),
-                          sticky="nsew", pady=(4, 8))
+        self._tabela.grid(row=1, column=0, sticky="nsew", pady=(4, 8))
 
-        # Configurando a área rolável
+        # Mesmas colunas do cabeçalho
         for i, (_, _, peso) in enumerate(CAMPOS):
-            self._tabela.grid_columnconfigure(i, weight=peso)
+            self._tabela.grid_columnconfigure(i, weight=peso, uniform="cols")
+
+        # Mantém o cabeçalho alinhado quando a janela muda de tamanho
+        self._cab_padx = None
+        self._tabela.bind("<Configure>", self._alinhar_cabecalho, add="+")
+        cartao.bind("<Configure>", self._alinhar_cabecalho, add="+")
 
        # ── Barra de ações ────────────────────────────────────────────
         barra = ctk.CTkFrame(self, fg_color="transparent")
@@ -170,7 +182,26 @@ class TelaResultados(ctk.CTkFrame):
                     text_color=cor,
                     fg_color=bg,
                     anchor="w",
+                    width=0,
                 ).grid(row=lin, column=col, sticky="ew", padx=12, pady=6)
+
+        self.after_idle(self._alinhar_cabecalho)
+
+    def _alinhar_cabecalho(self, _evento=None):
+        """Faz o cabeçalho ocupar a mesma faixa horizontal das linhas de dados.
+
+        A área rolável tem margem interna à esquerda e a barra de rolagem à direita,
+        então ela é mais estreita que o cartão. Medimos essa faixa e aplicamos a
+        diferença como padding do cabeçalho.
+        """
+        larg = self._tabela.winfo_width()
+        if larg <= 1:
+            return
+        esq = max(self._tabela.winfo_rootx() - self._cartao.winfo_rootx(), 0)
+        dir_ = max(self._cartao.winfo_width() - esq - larg, 0)
+        if self._cab_padx != (esq, dir_):
+            self._cab_padx = (esq, dir_)
+            self._cab.grid_configure(padx=(esq, dir_))
 
     # ── Ações ─────────────────────────────────────────────────────────
 
