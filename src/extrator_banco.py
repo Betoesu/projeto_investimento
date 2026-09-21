@@ -51,7 +51,7 @@ def extrair_investimentos(driver):
     }
 
     resultado = requests.get(url=url_api, headers=headers)
-    resultado.raise_for_status
+    resultado.raise_for_status()
 
     data = resultado.json()
 

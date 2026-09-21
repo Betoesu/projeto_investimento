@@ -1,5 +1,5 @@
 ## ORIGEM ## 
-Dados virão através do Selenium pelo HTML da página
+Dados virão através de Engenharia Reversa de API da página
 
 ## TRANSFORMAÇÃO ## 
 Preciso somente de dados dos investimentos:
@@ -10,9 +10,10 @@ Preciso somente de dados dos investimentos:
 - Vencimento
 
 ## DESTINO ## 
-Pode ser salvo como um CSV ou arquivo TXT organizado
+Pode ser salvo como TXT organizado
 
 ## A FAZERES ##
+- Arrumar Interface
 - Filtros na tela de resultados
 - Calculo Ciencia de dados. Clusterizar. (Consultar Bernardo)
 - Integração com Gemini e investimento automatico através de recomendação do Gemini com inputs para continuar
