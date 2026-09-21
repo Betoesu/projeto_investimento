@@ -11,6 +11,6 @@ def main():
     # 2. Inicia o "loop principal" (mantém a janela aberta e escutando cliques)
     app.mainloop()
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
