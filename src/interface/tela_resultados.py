@@ -10,12 +10,36 @@ from . import tema
 
 CAMPOS = [
     # Aumentamos o peso do produto e demos mais espaço para as colunas finais
-    ("produto",            "Produto",       5), 
+    ("produto",            "Produto",       5),
     ("rendimento",         "Rendimento",    3),
     ("investimento_minimo","Inv. Mínimo",   3),
-    ("isento_ir",          "Isento IR",     3), 
-    ("vencimento",         "Vencimento",    4), 
+    ("isento_ir",          "Isento IR",     3),
+    ("vencimento",         "Vencimento",    4),
 ]
+
+# Quais colunas têm o comportamento de seta (exclusividade mútua)
+_COLS_SETA   = {"investimento_minimo", "vencimento"}
+                                                                       # caso queira mexer com redimento _COLS_SETA   = {"rendimento", "investimento_minimo", "vencimento"}
+# A coluna toggle de fundo
+_COL_TOGGLE  = "isento_ir"
+# A coluna de reset
+_COL_RESET   = "produto"
+
+# Ícones de ordenação
+_SETA_CIMA   = " ↑"
+_SETA_BAIXO  = " ↓"
+
+# Cores do cabeçalho interativo
+_COR_NORMAL        = tema.TEXTO_MUTED
+_COR_HOVER         = tema.TEXTO_SECUNDARIO
+_COR_ATIVO         = tema.ACCENT          # verde quando ativo (seta)
+_COR_RESET_HOVER   = tema.TEXTO_SECUNDARIO
+_BG_NORMAL         = tema.CARD_BG
+_BG_HOVER          = tema.CARD_BG_HOVER
+_BG_SETA_ATIVO     = tema.ACCENT_BG      # fundo sutil verde nas colunas com seta ativa
+_BG_TOGGLE_ATIVO   = tema.ACCENT_BG
+_COR_TOGGLE_ATIVO  = tema.ACCENT
+
 
 
 def _formatar_txt(investimentos):
@@ -38,6 +62,131 @@ def _formatar_txt(investimentos):
     linhas.append("=" * 68)
     return "\n".join(linhas)
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Widget de célula de cabeçalho
+# ──────────────────────────────────────────────────────────────────────────────
+
+class _CelulaCabecalho(tk.Frame):
+    """Célula interativa do cabeçalho da tabela.
+
+    Três modos de comportamento, selecionados por `modo`:
+      "reset"   – Produto: clique invisível que reseta todos os outros.
+      "seta"    – Rendimento / Inv. Mínimo / Vencimento: hover de botão +
+                  seta que alterna ↑ / ↓ com exclusividade mútua.
+      "toggle"  – Isento IR: hover normal + fundo verde quando ativo.
+    """
+
+    def __init__(self, master, rotulo: str, modo: str,
+                 on_click=None, **kwargs):
+        super().__init__(master, bg=_BG_NORMAL,
+                         highlightthickness=0, bd=0, **kwargs)
+        self._rotulo  = rotulo
+        self._modo    = modo           # "reset" | "seta" | "toggle"
+        self.on_click = on_click       # callable sem argumentos
+
+        # Estado interno
+        self._seta_estado = None       # None | "cima" | "baixo"  (modo seta)
+        self._toggle_ativo = False     # (modo toggle)
+
+        # Label principal
+        self._label = tk.Label(
+            self,
+            text=rotulo,
+            font=tema.FONTE_TABELA_H,
+            fg=_COR_NORMAL,
+            bg=_BG_NORMAL,
+            anchor="w",
+            cursor="hand2",
+        )
+        self._label.pack(fill="both", expand=True, padx=0, pady=0)
+
+        # Bind de eventos em ambos frame + label para não haver "buracos"
+        for widget in (self, self._label):
+            widget.bind("<Enter>",  self._ao_entrar)
+            widget.bind("<Leave>",  self._ao_sair)
+            widget.bind("<Button-1>", self._ao_clicar)
+
+    # ── Eventos ──────────────────────────────────────────────────────────────
+
+    def _ao_entrar(self, _e=None):
+        if self._modo == "reset":
+            # Produto: hover sutil — só clareia o texto, sem mudar o fundo
+            self._label.configure(fg=_COR_RESET_HOVER)
+            return
+        if self._modo == "toggle" and self._toggle_ativo:
+            return  # já tem fundo verde; não altera hover
+
+        bg_h = _BG_HOVER
+        if self._modo == "seta" and self._seta_estado is not None:
+            # ativo: mantém o bg verde e clareia ainda mais o texto no hover
+            bg_h = _BG_SETA_ATIVO
+            cor_h = tema.TEXTO_PRIMARIO
+        else:
+            cor_h = _COR_HOVER
+        self.configure(bg=bg_h)
+        self._label.configure(bg=bg_h, fg=cor_h)
+
+    def _ao_sair(self, _e=None):
+        if self._modo == "reset":
+            self._label.configure(fg=_COR_NORMAL)
+            return
+        self._restaurar_visual()
+
+    def _ao_clicar(self, _e=None):
+        if self.on_click:
+            self.on_click()
+
+    # ── API pública (chamada pelo TelaResultados) ─────────────────────────────
+
+    def ativar_seta(self):
+        """Modo seta: avança o estado None → ↑ → ↓ → ↑ → …"""
+        if self._seta_estado is None or self._seta_estado == "baixo":
+            self._seta_estado = "cima"
+        else:
+            self._seta_estado = "baixo"
+        icone = _SETA_CIMA if self._seta_estado == "cima" else _SETA_BAIXO
+        self._label.configure(
+            text=self._rotulo + icone,
+            fg=_COR_ATIVO,          # verde
+            bg=_BG_SETA_ATIVO,      # fundo verde sutil
+        )
+        self.configure(bg=_BG_SETA_ATIVO)
+
+    def limpar_seta(self):
+        """Modo seta: remove a seta e volta ao estilo neutro."""
+        self._seta_estado = None
+        self._label.configure(text=self._rotulo, fg=_COR_NORMAL, bg=_BG_NORMAL)
+        self.configure(bg=_BG_NORMAL)
+
+    def alternar_toggle(self):
+        """Modo toggle: inverte o estado de fundo."""
+        self._toggle_ativo = not self._toggle_ativo
+        self._restaurar_visual()
+
+    def resetar(self):
+        """Volta a célula ao estado neutro (seta ou toggle)."""
+        if self._modo == "seta":
+            self.limpar_seta()
+        elif self._modo == "toggle":
+            self._toggle_ativo = False
+            self._restaurar_visual()
+
+    # ── Helpers internos ─────────────────────────────────────────────────────
+
+    def _restaurar_visual(self):
+        """Aplica o visual correto para o estado atual (fora do hover)."""
+        if self._modo == "toggle" and self._toggle_ativo:
+            bg  = _BG_TOGGLE_ATIVO
+            cor = _COR_TOGGLE_ATIVO
+        elif self._modo == "seta" and self._seta_estado is not None:
+            bg  = _BG_SETA_ATIVO    # fundo verde sutil mantido no estado ativo
+            cor = _COR_ATIVO        # texto verde
+        else:
+            bg  = _BG_NORMAL
+            cor = _COR_NORMAL
+
+        self.configure(bg=bg)
+        self._label.configure(bg=bg, fg=cor)
 
 class TelaResultados(ctk.CTkFrame):
     """Cabeçalho + tabela rolável + barra de ações."""
@@ -48,12 +197,13 @@ class TelaResultados(ctk.CTkFrame):
         self.winfo_toplevel().geometry("1200x700")
 
         self._dados = []
+        self._celulas_cab: dict[str, _CelulaCabecalho] = {}
         self._montar()
 
     # ── Construção da UI ─────────────────────────────────────────────
 
     def _montar(self):
-        # Cabeçalho
+        # Título + pílula de contagem
         topo = ctk.CTkFrame(self, fg_color="transparent")
         topo.pack(fill="x", padx=28, pady=(24, 0))
 
@@ -76,8 +226,7 @@ class TelaResultados(ctk.CTkFrame):
         )
         self._pill.pack(side="right")
 
-        sep = tk.Frame(self, bg=tema.BORDA, height=1)
-        sep.pack(fill="x", padx=28, pady=(12, 0))
+        tk.Frame(self, bg=tema.BORDA, height=1).pack(fill="x", padx=28, pady=(12, 0))
 
         # Cartão da tabela
         self._cartao = ctk.CTkFrame(self, fg_color=tema.CARD_BG, corner_radius=12)
@@ -85,44 +234,61 @@ class TelaResultados(ctk.CTkFrame):
         cartao = self._cartao
 
         cartao.grid_columnconfigure(0, weight=1)
-        cartao.grid_rowconfigure(1, weight=1)
         cartao.grid_rowconfigure(0, minsize=48)
+        cartao.grid_rowconfigure(1, weight=1)
 
-        # Cabeçalho da tabela.
-        # Fica num tk.Frame próprio (padx em pixels reais) e usa as MESMAS colunas
-        # (pesos + uniform) das linhas de dados. Assim cada título fica exatamente
-        # acima da sua coluna. A faixa horizontal é ajustada em _alinhar_cabecalho.
-        self._cab = tk.Frame(cartao, bg=tema.CARD_BG, highlightthickness=0, bd=0)
+        # ── Faixa de cabeçalho ───────────────────────────────────────────────
+        self._cab = tk.Frame(cartao, bg=_BG_NORMAL, highlightthickness=0, bd=0)
         self._cab.grid(row=0, column=0, sticky="nsew")
 
-        for i, (_, rotulo, peso) in enumerate(CAMPOS):
+        for i, (chave, rotulo, peso) in enumerate(CAMPOS):
             self._cab.grid_columnconfigure(i, weight=peso, uniform="cols")
-            ctk.CTkLabel(
+
+            # === ADICIONE ESTE BLOCO AQUI === Caso queria que rendimento seja alteravel apague esse if abaixo
+            if chave == "rendimento":
+                # Desenha apenas um texto fixo, sem botão ou interações
+                tk.Label(
+                    self._cab, text=rotulo, font=tema.FONTE_TABELA_H,
+                    fg=_COR_NORMAL, bg=_BG_NORMAL, anchor="w"
+                ).grid(row=0, column=i, sticky="nsew", padx=12, pady=(12, 10))
+                continue  # Pula para a próxima coluna sem ler o código de baixo
+            
+            if chave == _COL_RESET:
+                modo = "reset"
+            elif chave == _COL_TOGGLE:
+                modo = "toggle"
+            elif chave in _COLS_SETA:
+                modo = "seta"
+            else:
+                modo = "reset"  # fallback seguro
+
+            celula = _CelulaCabecalho(
                 self._cab,
-                text=rotulo,
-                font=tema.FONTE_TABELA_H,
-                text_color=tema.TEXTO_MUTED,
-                anchor="w",
-                width=0,
-            ).grid(row=0, column=i, sticky="ew", padx=12, pady=(16, 14))
+                rotulo=rotulo,
+                modo=modo,
+                on_click=lambda ch=chave: self._ao_clicar_cabecalho(ch),
+            )
+            celula.grid(row=0, column=i, sticky="nsew", padx=12, pady=(12, 10))
+            self._celulas_cab[chave] = celula
 
-        # Linha separadora (South, East, West: cola no fundo da linha 0)
-        sep2 = tk.Frame(cartao, bg=tema.BORDA, height=1)
-        sep2.grid(row=0, column=0, sticky="sew", padx=12, pady=0)
+        # Linha separadora colada no fundo do cabeçalho
+        tk.Frame(cartao, bg=tema.BORDA, height=1).grid(
+            row=0, column=0, sticky="sew", padx=12, pady=0
+        )
 
+        # ── Área de dados ────────────────────────────────────────────────────
         self._tabela = ctk.CTkScrollableFrame(cartao, fg_color="transparent")
         self._tabela.grid(row=1, column=0, sticky="nsew", pady=(4, 8))
 
-        # Mesmas colunas do cabeçalho
         for i, (_, _, peso) in enumerate(CAMPOS):
             self._tabela.grid_columnconfigure(i, weight=peso, uniform="cols")
 
-        # Mantém o cabeçalho alinhado quando a janela muda de tamanho
+        # Alinhamento dinâmico do cabeçalho com a área de dados
         self._cab_padx = None
         self._tabela.bind("<Configure>", self._alinhar_cabecalho, add="+")
-        cartao.bind("<Configure>", self._alinhar_cabecalho, add="+")
+        cartao.bind("<Configure>",       self._alinhar_cabecalho, add="+")
 
-       # ── Barra de ações ────────────────────────────────────────────
+        # ── Barra de ações ───────────────────────────────────────────────────
         barra = ctk.CTkFrame(self, fg_color="transparent")
         barra.pack(fill="x", padx=28, pady=(12, 28))
 
@@ -148,44 +314,78 @@ class TelaResultados(ctk.CTkFrame):
         )
         self._msg.pack(side="right", padx=(8, 0))
 
-    # ── Dados ────────────────────────────────────────────────────────
+    # ── Eventos do cabeçalho ─────────────────────────────────────────────────
 
-    def atualizar_dados(self, investimentos):
-        """Redesenha a tabela. Chame antes de exibir esta tela."""
-        self._dados = investimentos
-        for w in self._tabela.winfo_children():
-            w.destroy()
+    def _ao_clicar_cabecalho(self, chave: str):
+        """Despacha o clique de acordo com o modo de cada coluna e reordena."""
+        
+        # 1. ATUALIZA O VISUAL DOS BOTÕES
+        if chave == _COL_RESET:
+            # Produto: reseta todos os outros cabeçalhos
+            for ch, cel in self._celulas_cab.items():
+                if ch != _COL_RESET:
+                    cel.resetar()
 
-        qtd = len(investimentos)
-        self._pill.configure(
-            text=f"{qtd} Produto{'s' if qtd != 1 else ''} Encontrado{'s' if qtd != 1 else ''}"
-        )
-        self._msg.configure(text="")
+        elif chave == _COL_TOGGLE:
+            # Isento IR: toggle de fundo, independente das setas
+            self._celulas_cab[chave].alternar_toggle()
 
-        for lin, item in enumerate(investimentos):
-            # fundo alternado
-            bg = tema.CARD_BG if lin % 2 == 0 else tema.BG
+        elif chave in _COLS_SETA:
+            # Rendimento / Inv. Mínimo / Vencimento: exclusividade de setas
+            for ch, cel in self._celulas_cab.items():
+                if ch in _COLS_SETA and ch != chave:
+                    cel.limpar_seta()
+            self._celulas_cab[chave].ativar_seta()
 
-            for col, (chave, _, _) in enumerate(CAMPOS):
-                bruto = item.get(chave, "-")
-                cor = tema.TEXTO_PRIMARIO
+        # 2. CHAMA A CENTRAL DE ORDENAÇÃO
+        # Ela vai olhar para o estado visual dos botões, ordenar em cascata 
+        # (garantindo o Isento no topo) e chamar o atualizar_dados() sozinha.
+        self._aplicar_ordenacao()
 
-                if chave == "isento_ir":
-                    eh = str(bruto).strip().lower() in ("sim", "true", "isento")
-                    bruto = "Sim" if eh else "Não"
-                    cor = tema.ACCENT if eh else tema.TEXTO_SECUNDARIO
 
-                ctk.CTkLabel(
-                    self._tabela,
-                    text=str(bruto),
-                    font=tema.FONTE_CORPO,
-                    text_color=cor,
-                    fg_color=bg,
-                    anchor="w",
-                    width=0,
-                ).grid(row=lin, column=col, sticky="ew", padx=12, pady=6)
+    def _aplicar_ordenacao(self):
+        # 1. Ordem base (Produto alfabético)
+        tabela = sorted(self._dados, key=lambda d: str(d.get('produto', '')).lower())
 
-        self.after_idle(self._alinhar_cabecalho)
+        # 2. AQUI ESTÃO OS SEUS IFs DE VENCIMENTO E INVESTIMENTO MÍNIMO
+        for chave in _COLS_SETA:
+            estado = self._celulas_cab[chave]._seta_estado
+            if estado:
+                if chave == "investimento_minimo":
+                    def get_minimo(d):
+                        try:
+                            return float(str(d.get('investimento_minimo', '0')).replace("R$ ","").replace('.','').replace(',','.'))
+                        except Exception:
+                            return 0.0
+                            
+                    tabela.sort(key=get_minimo, reverse=(estado == "baixo"))
+
+                elif chave == "vencimento":
+                    def get_data(d):
+                        v = str(d.get('vencimento', '-')).strip()
+                        if v == "-":
+                            return datetime.datetime.min if estado == "baixo" else datetime.datetime.max
+                        try:
+                            return datetime.datetime.strptime(v, "%d/%m/%Y")
+                        except Exception:
+                            return datetime.datetime.min if estado == "baixo" else datetime.datetime.max
+                            
+                    tabela.sort(key=get_data, reverse=(estado == "baixo"))
+
+        # 3. AQUI ESTÁ O SEU IF DO ISENTO IR (Por último, para ser o mestre da tabela)
+        if self._celulas_cab["isento_ir"]._toggle_ativo:
+            def get_isento(d):
+                v = d.get('isento_ir', False)
+                if isinstance(v, bool): 
+                    return 1 if v else 0
+                return 1 if str(v).strip().lower() in ("sim", "true", "isento", "1") else 0
+                
+            tabela.sort(key=get_isento, reverse=True)
+
+        # 4. Finalmente, envia a tabela ordenada para ser desenhada
+        self.atualizar_dados(tabela)
+        
+    # ── Alinhamento dinâmico ──────────────────────────────────────────────────
 
     def _alinhar_cabecalho(self, _evento=None):
         """Faz o cabeçalho ocupar a mesma faixa horizontal das linhas de dados.
@@ -202,6 +402,67 @@ class TelaResultados(ctk.CTkFrame):
         if self._cab_padx != (esq, dir_):
             self._cab_padx = (esq, dir_)
             self._cab.grid_configure(padx=(esq, dir_))
+
+
+    # ── Dados ────────────────────────────────────────────────────────
+
+    def atualizar_dados(self, investimentos):
+        """Redesenha a tabela ou apenas atualiza os valores se a quantidade for a mesma (Muito mais rápido)."""
+        self._dados = investimentos
+
+        qtd = len(investimentos)
+        self._pill.configure(
+            text=f"{qtd} Produto{'s' if qtd != 1 else ''} Encontrado{'s' if qtd != 1 else ''}"
+        )
+        self._msg.configure(text="")
+
+        widgets_existentes = self._tabela.winfo_children()
+        total_labels_necessarios = qtd * len(CAMPOS)
+
+        # Se a quantidade mudou, destrói tudo e recria do zero (Lento, mas necessário)
+        if len(widgets_existentes) != total_labels_necessarios:
+            for w in widgets_existentes:
+                w.destroy()
+
+            for lin, item in enumerate(investimentos):
+                bg = tema.CARD_BG if lin % 2 == 0 else tema.BG
+                for col, (chave, _, _) in enumerate(CAMPOS):
+                    bruto = item.get(chave, "-")
+                    cor = tema.TEXTO_PRIMARIO
+
+                    if chave == "isento_ir":
+                        eh = str(bruto).strip().lower() in ("sim", "true", "isento")
+                        bruto = "Sim" if eh else "Não"
+                        cor = tema.ACCENT if eh else tema.TEXTO_SECUNDARIO
+
+                    ctk.CTkLabel(
+                        self._tabela,
+                        text=str(bruto),
+                        font=tema.FONTE_CORPO,
+                        text_color=cor,
+                        fg_color=bg,
+                        anchor="w",
+                        width=0,
+                    ).grid(row=lin, column=col, sticky="ew", padx=12, pady=6)
+
+        # MÁGICA AQUI: Se a quantidade é a mesma, só troca os textos e as cores (Instantâneo)
+        else:
+            idx = 0
+            for lin, item in enumerate(investimentos):
+                for col, (chave, _, _) in enumerate(CAMPOS):
+                    bruto = item.get(chave, "-")
+                    cor = tema.TEXTO_PRIMARIO
+
+                    if chave == "isento_ir":
+                        eh = str(bruto).strip().lower() in ("sim", "true", "isento")
+                        bruto = "Sim" if eh else "Não"
+                        cor = tema.ACCENT if eh else tema.TEXTO_SECUNDARIO
+
+                    # Acessa a label que já está na tela e apenas altera seus valores
+                    widgets_existentes[idx].configure(text=str(bruto), text_color=cor)
+                    idx += 1
+
+        self.after_idle(self._alinhar_cabecalho)
 
     # ── Ações ─────────────────────────────────────────────────────────
 
