@@ -383,7 +383,7 @@ class TelaResultados(ctk.CTkFrame):
             tabela.sort(key=get_isento, reverse=True)
 
         # 4. Finalmente, envia a tabela ordenada para ser desenhada
-        self.atualizar_dados(tabela)
+        self.atualizar_dados(tabela, ja_ordenado=True)
         
     # ── Alinhamento dinâmico ──────────────────────────────────────────────────
 
@@ -406,8 +406,15 @@ class TelaResultados(ctk.CTkFrame):
 
     # ── Dados ────────────────────────────────────────────────────────
 
-    def atualizar_dados(self, investimentos):
+    def atualizar_dados(self, investimentos, ja_ordenado=False):
         """Redesenha a tabela ou apenas atualiza os valores se a quantidade for a mesma (Muito mais rápido)."""
+
+
+        if not ja_ordenado:
+            self._dados = investimentos
+            self._aplicar_ordenacao()
+            return
+        
         self._dados = investimentos
 
         qtd = len(investimentos)

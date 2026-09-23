@@ -13,8 +13,8 @@ Preciso somente de dados dos investimentos:
 Pode ser salvo como TXT organizado
 
 ## A FAZERES ##
-- Arrumar tela resultado que começa na ordem diferente da alfabetica
-- Filtros na tela de resultados
-- Calculo Ciencia de dados. Clusterizar. (Consultar Bernardo)
+- Ordenação por rendimento (IDEIA API PARA PREÇO CDI HOJE)
+- Filtros na tela de resultados | Calculo Ciencia de dados. Clusterizar. (Consultar Bernardo)
+- Calculadora de Investimentos
 - Integração com Gemini e investimento automatico através de recomendação do Gemini com inputs para continuar
 - Adaptar Lumen
