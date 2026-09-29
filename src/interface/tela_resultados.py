@@ -328,6 +328,25 @@ class TelaResultados(ctk.CTkFrame):
         )
         self._msg.pack(side="right", padx=(8, 0))
 
+
+        #--------------------TEMPORÁRIO--------------------
+
+        # Caixas de filtro
+        self._input_min = ctk.CTkEntry(barra, placeholder_text="Mín (Ex: 100)", width=100)
+        self._input_min.pack(side="left", padx=(0, 8))
+        
+        self._input_max = ctk.CTkEntry(barra, placeholder_text="Máx (Ex: 5000)", width=100)
+        self._input_max.pack(side="left", padx=(0, 12))
+
+        # Opcional: um botão para disparar o filtro manualmente
+        self._btn_filtrar = ctk.CTkButton(
+            barra, text="Filtrar", width=80, 
+            command=self._aplicar_ordenacao
+        )
+        self._btn_filtrar.pack(side="left", padx=(0, 24))
+
+        #--------------------TEMPORÁRIO--------------------
+
     # ── Eventos do cabeçalho ─────────────────────────────────────────────────
 
     def _ao_clicar_cabecalho(self, chave: str):
@@ -349,20 +368,55 @@ class TelaResultados(ctk.CTkFrame):
         self._aplicar_ordenacao()
 
     def _aplicar_ordenacao(self):
-        """Ordena self._dados respeitando os estados dos botões e redesenha.
+        """Filtra e Ordena self._dados respeitando os estados dos botões e redesenha.
 
+        
+        MUDAR |
+              v
         Cascata de ordenação (da menor para a maior prioridade):
           1. Alfabético por produto (base sempre estável)
-          2. Coluna de seta ativa (Inv. Mínimo ou Vencimento)
-          3. Rendimento padronizado, se houver seta em 'rendimento'
-             (coluna desabilitada visualmente, mas suportada aqui para quando
-             você reativar a interação nela)
-          4. Isento IR no topo — prioridade máxima (por ser toggle global)
+          2. Coluna de seta ativa (Inv. Mínimo ou Vencimento ou Rendimento)
+          3. Isento IR no topo — prioridade máxima (por ser toggle global)
         """
-        # 1. Base alfabética
-        tabela = sorted(self._dados, key=lambda d: str(d.get("produto", "")).lower())
+        # 1. LER OS INPUTS DA TELA
+        # Tenta converter o que o usuário digitou. Se estiver vazio ou for letra, assume os limites padrão.
+        try:
+            val_min = float(self._input_min.get().replace(",", ".")) if self._input_min.get().strip() else 0.0
+        except ValueError:
+            val_min = 0.0
 
-        # 2. Colunas de seta (Inv. Mínimo e Vencimento)
+        try:
+            val_max = float(self._input_max.get().replace(",", ".")) if self._input_max.get().strip() else float('inf')
+        except ValueError:
+            val_max = float('inf')
+
+        # 2. APLICA FILTRO DE VALORES
+        try:   
+            val_min = 0.0 if val_min == "" else float(val_min)
+            val_max = float('inf') if val_max == "" else float(val_max)
+             
+        except ValueError:
+            print("Entrada inválida! Por favor, digite somente números.")
+            return []
+
+        tabela_filtrada = []
+        for inv in self._dados:
+            texto_valor = str(inv.get("investimento_minimo", "0"))
+            try:
+                # Limpa a string financeira e converte
+                texto_limpo = texto_valor.replace("R$", "").replace(".", "").replace(",", ".").strip()
+                valor_inv = float(texto_limpo)
+            except ValueError:
+                valor_inv = 0.0
+            
+            # Só adiciona na lista se estiver dentro da faixa
+            if val_min <= valor_inv <= val_max:
+                tabela_filtrada.append(inv)
+
+        # 3. Base alfabética
+        tabela = sorted(tabela_filtrada, key=lambda d: str(d.get("produto", "")).lower())
+
+        # 4. Colunas de seta (Inv. Mínimo e Vencimento e Rendimento)
         for chave in _COLS_SETA:
             cel = self._celulas_cab.get(chave)
             if cel is None:
@@ -371,7 +425,7 @@ class TelaResultados(ctk.CTkFrame):
             if not estado:
                 continue
 
-            decrescente = (estado == "baixo")
+            decrescente = (estado == "cima")
 
             if chave == "investimento_minimo":
                 def get_minimo(d, _ch=chave):
@@ -402,15 +456,7 @@ class TelaResultados(ctk.CTkFrame):
                     reverse=decrescente
                 )
 
-        # 3. Rendimento padronizado (coluna "rendimento", quando reativada)
-        cel_rend = self._celulas_cab.get("rendimento")
-        if cel_rend and cel_rend._seta_estado:
-            tabela.sort(
-                key=lambda d: float(d.get("rendimento_padronizado", 0)),
-                reverse=(cel_rend._seta_estado == "cima"),
-            )
-
-        # 4. Isento IR sempre por último → fica no topo da cascata
+        # 5. Isento IR sempre por último → fica no topo da cascata
         if self._celulas_cab.get("isento_ir") and self._celulas_cab["isento_ir"]._toggle_ativo:
             def get_isento(d):
                 v = d.get("isento_ir", False)
@@ -419,6 +465,7 @@ class TelaResultados(ctk.CTkFrame):
                 return 1 if str(v).strip().lower() in ("sim", "true", "isento", "1") else 0
             tabela.sort(key=get_isento, reverse=True)
 
+        # 6. MANDA DESENHAR A TABELA FILTRADA E ORDENADA
         self._renderizar(tabela)
 
     # ── Alinhamento dinâmico ──────────────────────────────────────────────────
