@@ -232,7 +232,8 @@ class TelaResultados(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, fg_color=tema.BG, corner_radius=0, **kwargs)
         self.winfo_toplevel().geometry("1200x700")
-        self._dados: list = []          # dados originais (recebidos de fora)
+        self._dados: list = []          # dados originais (intocáveis)
+        self._tabela_atual: list = []   # dados que estão visíveis na tela agora
         self._celulas_cab: dict[str, _CelulaCabecalho] = {}
         self._montar()
 
@@ -332,11 +333,18 @@ class TelaResultados(ctk.CTkFrame):
         #--------------------TEMPORÁRIO--------------------
 
         # Caixas de filtro
-        self._input_min = ctk.CTkEntry(barra, placeholder_text="Mín (Ex: 100)", width=100)
-        self._input_min.pack(side="left", padx=(0, 8))
+        self._input_inv_min = ctk.CTkEntry(barra, placeholder_text="Mín (Ex: 100)", width=100)
+        self._input_inv_min.pack(side="left", padx=(0, 8))
         
-        self._input_max = ctk.CTkEntry(barra, placeholder_text="Máx (Ex: 5000)", width=100)
-        self._input_max.pack(side="left", padx=(0, 12))
+        self._input_inv_max = ctk.CTkEntry(barra, placeholder_text="Máx (Ex: 5000)", width=100)
+        self._input_inv_max.pack(side="left", padx=(0, 12))
+
+        # Caixas de filtro vencimento
+        self._input_ano_min = ctk.CTkEntry(barra, placeholder_text="Digite o ano (Minimo: 2026)", width=100)
+        self._input_ano_min.pack(side="left", padx=(0, 8))
+                
+        self._input_ano_max = ctk.CTkEntry(barra, placeholder_text="Digite o ano", width=100)
+        self._input_ano_max.pack(side="left", padx=(0, 12))
 
         # Opcional: um botão para disparar o filtro manualmente
         self._btn_filtrar = ctk.CTkButton(
@@ -380,38 +388,64 @@ class TelaResultados(ctk.CTkFrame):
         """
         # 1. LER OS INPUTS DA TELA
         # Tenta converter o que o usuário digitou. Se estiver vazio ou for letra, assume os limites padrão.
+
+        # --- Filtro: Investimento ---
         try:
-            val_min = float(self._input_min.get().replace(",", ".")) if self._input_min.get().strip() else 0.0
+            val_min = float(self._input_inv_min.get().replace(",", ".")) if self._input_inv_min.get().strip() else 0.0
         except ValueError:
             val_min = 0.0
 
         try:
-            val_max = float(self._input_max.get().replace(",", ".")) if self._input_max.get().strip() else float('inf')
+            val_max = float(self._input_inv_max.get().replace(",", ".")) if self._input_inv_max.get().strip() else float('inf')
         except ValueError:
             val_max = float('inf')
 
-        # 2. APLICA FILTRO DE VALORES
-        try:   
-            val_min = 0.0 if val_min == "" else float(val_min)
-            val_max = float('inf') if val_max == "" else float(val_max)
-             
-        except ValueError:
-            print("Entrada inválida! Por favor, digite somente números.")
-            return []
+        # --- Filtro: Vencimento ---
+        ano_atual = datetime.datetime.today().year
 
+        try:
+            txt_ano_min = self._input_ano_min.get().strip()
+            ano_min = int(txt_ano_min) if txt_ano_min else 0 
+        except ValueError:
+            ano_min = 0
+
+        try:
+            txt_ano_max = self._input_ano_max.get().strip()
+            ano_max = int(txt_ano_max) if txt_ano_max else float('inf')
+        except ValueError:
+            ano_max = float('inf')
+
+        
+        # 2. APLICA FILTRO DE VALORES E DATAS
         tabela_filtrada = []
         for inv in self._dados:
-            texto_valor = str(inv.get("investimento_minimo", "0"))
+            # -- Extração Segura do Valor --
+            texto_valor = str(inv.get("investimento_minimo", "0")).replace("R$", "").replace(".", "").replace(",", ".").strip()
             try:
-                # Limpa a string financeira e converte
-                texto_limpo = texto_valor.replace("R$", "").replace(".", "").replace(",", ".").strip()
-                valor_inv = float(texto_limpo)
+                valor_inv = float(texto_valor)
             except ValueError:
                 valor_inv = 0.0
-            
-            # Só adiciona na lista se estiver dentro da faixa
-            if val_min <= valor_inv <= val_max:
+
+            # -- Extração Segura do Ano --
+            texto_data = str(inv.get("vencimento", "-")).strip()
+            if texto_data == "-":
+                # Se não tem vencimento (ex: CDB liquidez diária), assumimos o ano atual
+                ano_vencimento = ano_atual 
+            else:
+                try:
+                    ano_vencimento = datetime.datetime.strptime(texto_data, "%d/%m/%Y").year
+                except ValueError:
+                    # Se a data vier zoada da API, jogamos pro infinito para não dar erro
+                    ano_vencimento = float('inf') 
+
+
+            # Verificamos cada filtro separadamente. O resultado é True ou False.
+            passou_valor = (val_min <= valor_inv <= val_max)
+            passou_ano   = (ano_min <= ano_vencimento <= ano_max)
+
+            if passou_valor and passou_ano:
                 tabela_filtrada.append(inv)
+        
 
         # 3. Base alfabética
         tabela = sorted(tabela_filtrada, key=lambda d: str(d.get("produto", "")).lower())
@@ -464,6 +498,8 @@ class TelaResultados(ctk.CTkFrame):
                     return 1 if v else 0
                 return 1 if str(v).strip().lower() in ("sim", "true", "isento", "1") else 0
             tabela.sort(key=get_isento, reverse=True)
+
+        self._tabela_atual = tabela
 
         # 6. MANDA DESENHAR A TABELA FILTRADA E ORDENADA
         self._renderizar(tabela)
@@ -545,7 +581,7 @@ class TelaResultados(ctk.CTkFrame):
     # ── Ações ─────────────────────────────────────────────────────────────────
 
     def _exportar_txt(self):
-        if not self._dados:
+        if not self._tabela_atual:
             self._flash("Nenhum dado para exportar.")
             return
         from tkinter import filedialog
@@ -559,15 +595,15 @@ class TelaResultados(ctk.CTkFrame):
         if not caminho:
             return
         with open(caminho, "w", encoding="utf-8") as f:
-            f.write(_formatar_txt(self._dados))
+            f.write(_formatar_txt(self._tabela_atual))
         self._flash(f"Salvo em: {os.path.basename(caminho)}")
 
     def _copiar(self):
-        if not self._dados:
+        if not self._tabela_atual:
             self._flash("Nenhum dado para copiar.")
             return
         self.clipboard_clear()
-        self.clipboard_append(_formatar_txt(self._dados))
+        self.clipboard_append(_formatar_txt(self._tabela_atual))
         self._flash("Copiado para a área de transferência ✓")
 
     def _flash(self, msg, ms=3000):
