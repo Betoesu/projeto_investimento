@@ -353,6 +353,13 @@ class TelaResultados(ctk.CTkFrame):
         )
         self._btn_filtrar.pack(side="left", padx=(0, 24))
 
+         # Botão para limpar os filtros e atualizar a tabela
+        self._btn_limpar = ctk.CTkButton(
+            barra, text="Limpar", width=80, fg_color="gray", hover_color="darkgray",
+            command=self._limpar_filtros
+        )
+        self._btn_limpar.pack(side="left", padx=(0, 24))
+
         #--------------------TEMPORÁRIO--------------------
 
     # ── Eventos do cabeçalho ─────────────────────────────────────────────────
@@ -503,6 +510,17 @@ class TelaResultados(ctk.CTkFrame):
 
         # 6. MANDA DESENHAR A TABELA FILTRADA E ORDENADA
         self._renderizar(tabela)
+
+
+    def _limpar_filtros(self):
+        # Remove o texto de cada um dos campos de entrada
+        self._input_inv_min.delete(0, 'end')
+        self._input_inv_max.delete(0, 'end')
+        self._input_ano_min.delete(0, 'end')
+        self._input_ano_max.delete(0, 'end')
+        
+        # Executa a lógica de ordenação/filtragem (que agora lerá os campos vazios)
+        self._aplicar_ordenacao()
 
     # ── Alinhamento dinâmico ──────────────────────────────────────────────────
 

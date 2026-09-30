@@ -15,6 +15,8 @@ Pode ser salvo como TXT organizado
 ## A FAZERES ##
 - Filtros na tela de resultados -> CDB LCI e LCA | Mudar textos de vencimento minimo e maximo (Ta confuso)
 - Implementar interface Vinicius
+- Metodo de busca por nome de investimento
+- Ver possivel melhoria na velocidade de resposta do app
 - Calculadora de Investimentos
 - Integração com Gemini e investimento automatico através de recomendação do Gemini com inputs para continuar
 - Adaptar Lumen
