@@ -164,6 +164,7 @@ class App(ctk.CTk):
                 "investimento_minimo": inv_minimo,
                 "isento_ir": bool(item.get("isentoImpostos", False)),
                 "vencimento": vencimento,
+                "tipo_investimento": item.get("tipo", {}).get("descricao")
             })
         return tabela
  
