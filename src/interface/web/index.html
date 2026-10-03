@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Investimentos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#0f1319',
+                        card: '#181e25',
+                        primary: '#E2E8F0',
+                        muted: '#94A3B8',
+                        accent: '#10B981',
+                        accent_bg: 'rgba(16, 185, 129, 0.1)',
+                        border: '#2A3441',
+                        row_hover: '#202832'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-background text-primary font-sans h-screen overflow-hidden">
+    <div id="root" class="h-full"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        function App() {
+            const [searchTerm, setSearchTerm] = useState('');
+            const [investimentos, setInvestimentos] = useState([]);
+            
+            // Filtros
+            const [tiposFiltro, setTiposFiltro] = useState(['LCI', 'LCA', 'CDB']);
+            const [invMin, setInvMin] = useState('');
+            const [invMax, setInvMax] = useState('');
+            const [anoMin, setAnoMin] = useState('');
+            const [anoMax, setAnoMax] = useState('');
+            const [showFiltrosPanel, setShowFiltrosPanel] = useState(false);
+            
+            // Ordenação
+            const [sortKey, setSortKey] = useState('produto');
+            const [sortDirection, setSortDirection] = useState('asc');
+            const [isentoTop, setIsentoTop] = useState(false); // Toggle especial para Isento IR
+            
+            const [selectedRow, setSelectedRow] = useState(null);
+            const [isLoading, setIsLoading] = useState(false);
+
+            useEffect(() => {
+                lucide.createIcons();
+                window.addEventListener('pywebviewready', function() {
+                    window.pywebview.api.obter_investimentos().then(dados => {
+                        if (dados && dados.length > 0) setInvestimentos(dados);
+                    });
+                });
+            }, []);
+
+            const iniciarExtracao = () => {
+                setIsLoading(true);
+                if (window.pywebview) {
+                    window.pywebview.api.iniciar_extracao().then(dados => {
+                        setInvestimentos(dados);
+                        setIsLoading(false);
+                    }).catch(err => {
+                        alert("Erro ao extrair: " + err);
+                        setIsLoading(false);
+                    });
+                } else {
+                    setTimeout(() => {
+                        setInvestimentos([
+                            { id: 1, produto: 'LCI 300 DIAS', rendimento: 'Rende até 94% do CDI', investimento_minimo: 'R$ 50,00', isento_ir: true, vencimento: '09/02/2020', tipo_investimento: 'LCI' }
+                        ]);
+                        setIsLoading(false);
+                    }, 2000);
+                }
+            };
+
+            const toggleTipoFiltro = (f) => {
+                if (tiposFiltro.includes(f)) {
+                    setTiposFiltro(tiposFiltro.filter(item => item !== f));
+                } else {
+                    setTiposFiltro([...tiposFiltro, f]);
+                }
+            };
+
+            const handleSort = (key) => {
+                if (key === 'isento_ir') {
+                    setIsentoTop(!isentoTop);
+                    return;
+                }
+                if (sortKey === key) {
+                    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                } else {
+                    setSortKey(key);
+                    setSortDirection('asc');
+                }
+            };
+            
+            const extrairValorNumerico = (texto) => {
+                if (!texto || texto === '-') return 0;
+                try {
+                    let val = String(texto).replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+                    return parseFloat(val) || 0;
+                } catch { return 0; }
+            };
+
+            const extrairAno = (texto) => {
+                if (!texto || texto === '-') return new Date().getFullYear();
+                try {
+                    const partes = texto.split('/');
+                    if (partes.length === 3) return parseInt(partes[2]);
+                    return 9999;
+                } catch { return 9999; }
+            };
+            
+            const extrairRendimentoNumerico = (texto) => {
+                // Padronização básica similar ao Python
+                if (!texto) return 0;
+                let t = texto.toLowerCase();
+                try {
+                    if (t.includes('ipca')) {
+                        let match = t.match(/ipca\s*\+\s*([\d,.]+)/);
+                        return match ? parseFloat(match[1].replace(',', '.')) : 0;
+                    }
+                    let match = t.match(/([\d,.]+)\s*%/);
+                    return match ? parseFloat(match[1].replace(',', '.')) : 0;
+                } catch { return 0; }
+            };
+
+            const filteredAndSortedInvestimentos = useMemo(() => {
+                // 1. Filtragem
+                let filtrados = investimentos.filter(inv => {
+                    const tipoInv = inv.tipo_investimento || 'CDB';
+                    const matchTipo = tiposFiltro.length === 0 || tiposFiltro.includes(tipoInv);
+                    const matchBusca = inv.produto.toLowerCase().includes(searchTerm.toLowerCase());
+                    
+                    const valor = extrairValorNumerico(inv.investimento_minimo);
+                    const vMin = invMin ? parseFloat(invMin.replace(',', '.')) : 0;
+                    const vMax = invMax ? parseFloat(invMax.replace(',', '.')) : Infinity;
+                    const matchInv = valor >= vMin && valor <= vMax;
+                    
+                    const ano = extrairAno(inv.vencimento);
+                    const aMin = anoMin ? parseInt(anoMin) : 0;
+                    const aMax = anoMax ? parseInt(anoMax) : Infinity;
+                    const matchAno = ano >= aMin && ano <= aMax;
+                    
+                    return matchTipo && matchBusca && matchInv && matchAno;
+                });
+
+                // 2. Ordenação (Cascata do Python: Alfabético -> Coluna Ativa -> Isento IR no topo)
+                filtrados.sort((a, b) => a.produto.localeCompare(b.produto));
+                
+                if (sortKey) {
+                    filtrados.sort((a, b) => {
+                        let valA, valB;
+                        if (sortKey === 'investimento_minimo') {
+                            valA = extrairValorNumerico(a.investimento_minimo);
+                            valB = extrairValorNumerico(b.investimento_minimo);
+                        } else if (sortKey === 'vencimento') {
+                            // Gambiarra rápida para datas dd/mm/yyyy
+                            const dateA = a.vencimento === '-' ? 0 : new Date(a.vencimento.split('/').reverse().join('-')).getTime();
+                            const dateB = b.vencimento === '-' ? 0 : new Date(b.vencimento.split('/').reverse().join('-')).getTime();
+                            valA = dateA || 0; valB = dateB || 0;
+                        } else if (sortKey === 'rendimento') {
+                            valA = extrairRendimentoNumerico(a.rendimento);
+                            valB = extrairRendimentoNumerico(b.rendimento);
+                        } else {
+                            valA = a.produto;
+                            valB = b.produto;
+                        }
+
+                        if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+                        if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+                        return 0;
+                    });
+                }
+
+                if (isentoTop) {
+                    filtrados.sort((a, b) => {
+                        const aIsento = a.isento_ir ? 1 : 0;
+                        const bIsento = b.isento_ir ? 1 : 0;
+                        return bIsento - aIsento; // Desce os 0 (Não), Sobe os 1 (Sim)
+                    });
+                }
+
+                return filtrados;
+            }, [investimentos, tiposFiltro, searchTerm, invMin, invMax, anoMin, anoMax, sortKey, sortDirection, isentoTop]);
+
+            const getSortIcon = (key) => {
+                if (key === 'isento_ir') return isentoTop ? '↑' : '↕';
+                if (sortKey !== key) return '↕';
+                return sortDirection === 'asc' ? '↑' : '↓';
+            };
+
+            // Tela inicial vazia ou carregamento
+            if (investimentos.length === 0) {
+                return (
+                    <div className="flex flex-col h-full p-6 bg-background items-center justify-center">
+                        <h1 className="text-3xl font-bold text-white mb-8">Painel de Investimentos</h1>
+                        {isLoading ? (
+                            <div className="flex flex-col items-center">
+                                <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
+                                <p className="text-muted">Aguardando robô sincronizar com o banco...</p>
+                                <p className="text-xs text-muted mt-2">(Acompanhe o navegador Chrome que foi aberto)</p>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center">
+                                <p className="text-muted mb-6">Nenhum dado carregado ainda.</p>
+                                <button onClick={iniciarExtracao} className="px-6 py-3 bg-accent text-background font-bold rounded-md hover:opacity-90 transition-opacity flex items-center">
+                                    <i data-lucide="refresh-cw" className="w-5 h-5 mr-2"></i>
+                                    Sincronizar com o Banco
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
+            return (
+                <div className="flex flex-col h-full p-6 bg-background">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className="text-2xl font-bold text-white">Painel de Investimentos</h1>
+                        
+                        <div className="flex items-center space-x-4 flex-1 justify-center max-w-lg mx-auto relative">
+                            <div className="relative w-full">
+                                <i data-lucide="search" className="absolute left-3 top-2.5 w-4 h-4 text-muted"></i>
+                                <input 
+                                    type="text" 
+                                    placeholder="Pesquisar produto..." 
+                                    className="w-full bg-card border border-border rounded-md py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-accent text-white"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center space-x-4 relative">
+                            <button 
+                                onClick={() => setShowFiltrosPanel(!showFiltrosPanel)}
+                                className={`flex items-center px-4 py-2 bg-transparent border text-sm rounded-md transition-colors ${showFiltrosPanel ? 'border-accent text-accent bg-accent_bg' : 'border-border text-muted hover:border-accent hover:text-accent'}`}>
+                                <i data-lucide="filter" className="w-4 h-4 mr-2"></i>
+                                Filtros
+                                <i data-lucide={showFiltrosPanel ? "chevron-up" : "chevron-down"} className="w-4 h-4 ml-2"></i>
+                            </button>
+                            <div className="px-4 py-2 bg-accent_bg text-accent rounded-md text-sm font-medium">
+                                {filteredAndSortedInvestimentos.length} Produtos Encontrados
+                            </div>
+
+                            {/* Painel de Filtros Avançados */}
+                            {showFiltrosPanel && (
+                                <div className="absolute top-12 right-[180px] bg-card border border-border rounded-lg p-4 shadow-xl z-50 w-80">
+                                    <div className="mb-4">
+                                        <label className="text-xs text-muted font-bold uppercase mb-2 block">Investimento (R$)</label>
+                                        <div className="flex space-x-2">
+                                            <input type="text" placeholder="Mínimo" value={invMin} onChange={e => setInvMin(e.target.value)} className="w-1/2 bg-background border border-border rounded px-2 py-1 text-sm text-white focus:border-accent outline-none" />
+                                            <input type="text" placeholder="Máximo" value={invMax} onChange={e => setInvMax(e.target.value)} className="w-1/2 bg-background border border-border rounded px-2 py-1 text-sm text-white focus:border-accent outline-none" />
+                                        </div>
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="text-xs text-muted font-bold uppercase mb-2 block">Vencimento (Ano)</label>
+                                        <div className="flex space-x-2">
+                                            <input type="text" placeholder="Ano Mín" value={anoMin} onChange={e => setAnoMin(e.target.value)} className="w-1/2 bg-background border border-border rounded px-2 py-1 text-sm text-white focus:border-accent outline-none" />
+                                            <input type="text" placeholder="Ano Máx" value={anoMax} onChange={e => setAnoMax(e.target.value)} className="w-1/2 bg-background border border-border rounded px-2 py-1 text-sm text-white focus:border-accent outline-none" />
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button onClick={() => { setInvMin(''); setInvMax(''); setAnoMin(''); setAnoMax(''); }} className="text-xs text-muted hover:text-white">Limpar Campos</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Active Filters */}
+                    <div className="flex items-center mb-4">
+                        <span className="text-sm text-muted mr-3">Filtros Selecionados</span>
+                        <div className="flex space-x-2">
+                            {['LCI', 'LCA', 'CDB'].map(f => (
+                                <div key={f} 
+                                    onClick={() => toggleTipoFiltro(f)}
+                                    className={`flex items-center px-3 py-1 border rounded-full text-xs cursor-pointer transition-colors ${tiposFiltro.includes(f) ? 'bg-card border-border text-primary' : 'bg-transparent border-border text-muted hover:text-white'}`}>
+                                    {f}
+                                    {tiposFiltro.includes(f) && (
+                                        <button className="ml-2 text-muted hover:text-white">
+                                            <i data-lucide="x" className="w-3 h-3"></i>
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Table Container */}
+                    <div className="flex-1 overflow-auto bg-card rounded-lg border border-border custom-scrollbar">
+                        <table className="w-full text-left border-collapse">
+                            <thead className="bg-card sticky top-0 z-10 border-b border-border shadow-sm">
+                                <tr>
+                                    <th onClick={() => handleSort('produto')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'produto' ? 'text-accent' : 'text-muted'}`}>Produto <span className="ml-1">{getSortIcon('produto')}</span></th>
+                                    <th onClick={() => handleSort('rendimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'rendimento' ? 'text-accent' : 'text-muted'}`}>Rendimento <span className="ml-1">{getSortIcon('rendimento')}</span></th>
+                                    <th onClick={() => handleSort('investimento_minimo')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'investimento_minimo' ? 'text-accent' : 'text-muted'}`}>Inv. Máximo <span className="ml-1">{getSortIcon('investimento_minimo')}</span></th>
+                                    <th onClick={() => handleSort('isento_ir')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${isentoTop ? 'text-accent bg-accent_bg' : 'text-muted'}`}>Isento Ir <span className="ml-1">{getSortIcon('isento_ir')}</span></th>
+                                    <th onClick={() => handleSort('vencimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'vencimento' ? 'text-accent' : 'text-muted'}`}>Vencimento <span className="ml-1">{getSortIcon('vencimento')}</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredAndSortedInvestimentos.map((inv) => (
+                                    <tr 
+                                        key={inv.id || inv.produto + inv.vencimento} 
+                                        onClick={() => setSelectedRow(inv.id || inv.produto)}
+                                        className={`border-b border-border transition-colors cursor-pointer ${
+                                            selectedRow === (inv.id || inv.produto) 
+                                                ? 'bg-row_hover ring-1 ring-inset ring-accent' 
+                                                : 'hover:bg-row_hover'
+                                        }`}
+                                    >
+                                        <td className="py-4 px-6 text-sm whitespace-nowrap">{inv.produto}</td>
+                                        <td className="py-4 px-6 text-sm text-muted whitespace-nowrap">{inv.rendimento}</td>
+                                        <td className="py-4 px-6 text-sm text-muted whitespace-nowrap">{inv.investimento_minimo}</td>
+                                        <td className="py-4 px-6 text-sm whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <span className={`w-2 h-2 rounded-full mr-2 ${inv.isento_ir ? 'bg-accent' : 'bg-muted'}`}></span>
+                                                {inv.isento_ir ? 'Sim' : 'Não'}
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-6 text-sm text-muted whitespace-nowrap">{inv.vencimento}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Bottom Actions */}
+                    <div className="mt-4 flex space-x-3">
+                        <button 
+                            onClick={() => window.pywebview && window.pywebview.api.exportar_txt(filteredAndSortedInvestimentos)}
+                            className="flex items-center px-4 py-2 bg-transparent border border-border text-white rounded-md text-sm hover:bg-card transition-colors"
+                        >
+                            <i data-lucide="download" className="w-4 h-4 mr-2"></i>
+                            Exportar TXT
+                        </button>
+                        <button 
+                            onClick={() => window.pywebview && window.pywebview.api.copiar_dados(filteredAndSortedInvestimentos)}
+                            className="flex items-center px-4 py-2 bg-card border border-border text-white rounded-md text-sm hover:bg-row_hover transition-colors"
+                        >
+                            Copiar
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+    <style>
+        /* Personalização da barra de rolagem para combinar com o tema dark */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #181e25; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2A3441; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8; 
+        }
+    </style>
+</body>
+</html>

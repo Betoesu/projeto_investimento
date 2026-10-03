@@ -1,15 +1,10 @@
 """Ponto de entrada principal da aplicação."""
 
-from src.interface.app import App
+from src.interface.app_webview import main as iniciar_painel
 
 def main():
     print("Iniciando a Interface do Painel de Investimentos...")
-    
-    # 1. Instancia a janela principal que criamos
-    app = App()
-    
-    # 2. Inicia o "loop principal" (mantém a janela aberta e escutando cliques)
-    app.mainloop()
+    iniciar_painel()
 
 if __name__ == "__main__":
     main()
