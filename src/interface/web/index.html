@@ -43,13 +43,19 @@
             const [investimentos, setInvestimentos] = useState([]);
             
             // Filtros
-            const [tiposFiltro, setTiposFiltro] = useState(['LCI', 'LCA', 'CDB']);
+            const [tiposFiltro, setTiposFiltro] = useState([]); // Array de tipos ativos (equivalente aos True do dicionário)
             const [invMin, setInvMin] = useState('');
             const [invMax, setInvMax] = useState('');
             const [anoMin, setAnoMin] = useState('');
             const [anoMax, setAnoMax] = useState('');
             const [showFiltrosPanel, setShowFiltrosPanel] = useState(false);
             
+            // Extrai todos os tipos únicos disponíveis nos dados (Equivalente ao Dict Comprehension do Python)
+            const todosOsTipos = useMemo(() => {
+                const tipos = new Set(investimentos.map(inv => inv.tipo_investimento).filter(Boolean));
+                return Array.from(tipos);
+            }, [investimentos]);
+
             // Ordenação
             const [sortKey, setSortKey] = useState('produto');
             const [sortDirection, setSortDirection] = useState('asc');
@@ -80,7 +86,10 @@
                 } else {
                     setTimeout(() => {
                         setInvestimentos([
-                            { id: 1, produto: 'LCI 300 DIAS', rendimento: 'Rende até 94% do CDI', investimento_minimo: 'R$ 50,00', isento_ir: true, vencimento: '09/02/2020', tipo_investimento: 'LCI' }
+                            { id: 1, produto: 'LCI 300 DIAS', rendimento: 'Rende até 94% do CDI', investimento_minimo: 'R$ 50,00', isento_ir: true, vencimento: '09/02/2020', tipo_investimento: 'LCI' },
+                            { id: 2, produto: 'CDB TESTE', rendimento: '100% do CDI', investimento_minimo: 'R$ 100,00', isento_ir: false, vencimento: '01/01/2026', tipo_investimento: 'CDB' },
+                            { id: 3, produto: 'LCA TESTE', rendimento: '90% do CDI', investimento_minimo: 'R$ 500,00', isento_ir: true, vencimento: '01/01/2027', tipo_investimento: 'LCA' },
+                            { id: 4, produto: 'CRI NOVO TIPO', rendimento: 'IPCA + 5%', investimento_minimo: 'R$ 1.000,00', isento_ir: true, vencimento: '10/10/2030', tipo_investimento: 'CRI' }
                         ]);
                         setIsLoading(false);
                     }, 2000);
@@ -104,7 +113,11 @@
                     setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
                 } else {
                     setSortKey(key);
-                    setSortDirection('asc');
+                    if (['rendimento', 'investimento_minimo', 'vencimento'].includes(key)) {
+                        setSortDirection('desc');
+                    } else {
+                        setSortDirection('asc');
+                    }
                 }
             };
             
@@ -126,7 +139,6 @@
             };
             
             const extrairRendimentoNumerico = (texto) => {
-                // Padronização básica similar ao Python
                 if (!texto) return 0;
                 let t = texto.toLowerCase();
                 try {
@@ -140,10 +152,12 @@
             };
 
             const filteredAndSortedInvestimentos = useMemo(() => {
-                // 1. Filtragem
+                // 1. Filtragem (Aplicando exatamente a lógica: se não há filtro ativo, mostra todos, senão filtra os True)
+                const nenhum_filtro_ativo = tiposFiltro.length === 0;
+
                 let filtrados = investimentos.filter(inv => {
-                    const tipoInv = inv.tipo_investimento || 'CDB';
-                    const matchTipo = tiposFiltro.length === 0 || tiposFiltro.includes(tipoInv);
+                    const tipoInv = inv.tipo_investimento || '';
+                    const matchTipo = tiposFiltro.includes(tipoInv) || nenhum_filtro_ativo;
                     const matchBusca = inv.produto.toLowerCase().includes(searchTerm.toLowerCase());
                     
                     const valor = extrairValorNumerico(inv.investimento_minimo);
@@ -201,6 +215,11 @@
             const getSortIcon = (key) => {
                 if (key === 'isento_ir') return isentoTop ? '↑' : '↕';
                 if (sortKey !== key) return '↕';
+                
+                if (['rendimento', 'investimento_minimo', 'vencimento'].includes(key)) {
+                    // Para essas colunas, decrescente = ↑ (maiores no topo)
+                    return sortDirection === 'desc' ? '↑' : '↓';
+                }
                 return sortDirection === 'asc' ? '↑' : '↓';
             };
 
@@ -263,6 +282,22 @@
                             {showFiltrosPanel && (
                                 <div className="absolute top-12 right-[180px] bg-card border border-border rounded-lg p-4 shadow-xl z-50 w-80">
                                     <div className="mb-4">
+                                        <label className="text-xs text-muted font-bold uppercase mb-2 block">Tipos de Investimento</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {todosOsTipos.map(f => {
+                                                const isActive = tiposFiltro.includes(f);
+                                                return (
+                                                    <div key={f} 
+                                                        onClick={() => toggleTipoFiltro(f)}
+                                                        className={`px-3 py-1 border rounded-full text-xs cursor-pointer transition-colors ${isActive ? 'bg-accent_bg border-accent text-accent' : 'bg-transparent border-border text-muted hover:text-white'}`}>
+                                                        {f}
+                                                    </div>
+                                                );
+                                            })}
+                                            {todosOsTipos.length === 0 && <span className="text-xs text-muted">Nenhum dado disponível.</span>}
+                                        </div>
+                                    </div>
+                                    <div className="mb-4">
                                         <label className="text-xs text-muted font-bold uppercase mb-2 block">Investimento (R$)</label>
                                         <div className="flex space-x-2">
                                             <input type="text" placeholder="Mínimo" value={invMin} onChange={e => setInvMin(e.target.value)} className="w-1/2 bg-background border border-border rounded px-2 py-1 text-sm text-white focus:border-accent outline-none" />
@@ -277,7 +312,7 @@
                                         </div>
                                     </div>
                                     <div className="flex justify-end">
-                                        <button onClick={() => { setInvMin(''); setInvMax(''); setAnoMin(''); setAnoMax(''); }} className="text-xs text-muted hover:text-white">Limpar Campos</button>
+                                        <button onClick={() => { setTiposFiltro([]); setInvMin(''); setInvMax(''); setAnoMin(''); setAnoMax(''); }} className="text-xs text-muted hover:text-white">Limpar Filtros</button>
                                     </div>
                                 </div>
                             )}
@@ -285,23 +320,25 @@
                     </div>
 
                     {/* Active Filters */}
-                    <div className="flex items-center mb-4">
-                        <span className="text-sm text-muted mr-3">Filtros Selecionados</span>
-                        <div className="flex space-x-2">
-                            {['LCI', 'LCA', 'CDB'].map(f => (
-                                <div key={f} 
-                                    onClick={() => toggleTipoFiltro(f)}
-                                    className={`flex items-center px-3 py-1 border rounded-full text-xs cursor-pointer transition-colors ${tiposFiltro.includes(f) ? 'bg-card border-border text-primary' : 'bg-transparent border-border text-muted hover:text-white'}`}>
-                                    {f}
-                                    {tiposFiltro.includes(f) && (
-                                        <button className="ml-2 text-muted hover:text-white">
-                                            <i data-lucide="x" className="w-3 h-3"></i>
+                    {tiposFiltro.length > 0 && (
+                        <div className="flex items-center mb-4">
+                            <span className="text-sm text-muted mr-3">Filtros Selecionados</span>
+                            <div className="flex space-x-2">
+                                {tiposFiltro.map(f => (
+                                    <div key={f} 
+                                        className="group flex items-center px-3 py-1 border border-border bg-card rounded-full text-xs transition-colors hover:bg-row_hover cursor-pointer"
+                                        title="Clique para remover"
+                                        onClick={() => toggleTipoFiltro(f)}
+                                    >
+                                        <span className="text-primary">{f}</span>
+                                        <button className="hidden group-hover:block ml-2 text-muted hover:text-white">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                         </button>
-                                    )}
-                                </div>
-                            ))}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Table Container */}
                     <div className="flex-1 overflow-auto bg-card rounded-lg border border-border custom-scrollbar">
@@ -310,7 +347,7 @@
                                 <tr>
                                     <th onClick={() => handleSort('produto')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'produto' ? 'text-accent' : 'text-muted'}`}>Produto <span className="ml-1">{getSortIcon('produto')}</span></th>
                                     <th onClick={() => handleSort('rendimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'rendimento' ? 'text-accent' : 'text-muted'}`}>Rendimento <span className="ml-1">{getSortIcon('rendimento')}</span></th>
-                                    <th onClick={() => handleSort('investimento_minimo')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'investimento_minimo' ? 'text-accent' : 'text-muted'}`}>Inv. Máximo <span className="ml-1">{getSortIcon('investimento_minimo')}</span></th>
+                                    <th onClick={() => handleSort('investimento_minimo')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'investimento_minimo' ? 'text-accent' : 'text-muted'}`}>Inv. Mínimo <span className="ml-1">{getSortIcon('investimento_minimo')}</span></th>
                                     <th onClick={() => handleSort('isento_ir')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${isentoTop ? 'text-accent bg-accent_bg' : 'text-muted'}`}>Isento Ir <span className="ml-1">{getSortIcon('isento_ir')}</span></th>
                                     <th onClick={() => handleSort('vencimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'vencimento' ? 'text-accent' : 'text-muted'}`}>Vencimento <span className="ml-1">{getSortIcon('vencimento')}</span></th>
                                 </tr>
