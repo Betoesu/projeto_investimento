@@ -31,7 +31,7 @@ Antes de começar, certifique-se de ter instalado em sua máquina:
 
 ### 1. Clonar o repositório
 ```bash
-git clone <URL_DO_REPOSITORIO>
+git clone https://github.com/Betoesu/projeto_investimento.git
 cd projeto_invest
 ```
 
@@ -67,6 +67,11 @@ pip install -r requirements.txt
 ---
 
 ## ▶️ Como Rodar o Programa
+Confira se está com o venv ativado, caso não esteja rode:
+
+```bash
+.\.venv\Scripts\Activate.ps1
+```
 
 Para iniciar o painel principal conectado ao extrator do Banco Inter, execute na raiz do projeto:
 
