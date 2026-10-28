@@ -13,7 +13,7 @@ def _transformar_para_tabela(dados_brutos):
         aplicacao_minima = item.get("aplicacaoMinima", 0)
         try:
             inv_minimo = f"R$ {float(aplicacao_minima):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-        except:
+        except (ValueError, TypeError):
             inv_minimo = str(aplicacao_minima)
 
         data_resgate = item.get("dataResgate") or ""
@@ -29,6 +29,12 @@ def _transformar_para_tabela(dados_brutos):
         })
     return tabela
 
+def _formatar_linhas_relatorio(dados_filtrados):
+    return "\n".join(
+        f"{d['produto']} | {d['rendimento']} | {d['investimento_minimo']} | {d['vencimento']}"
+        for d in dados_filtrados
+    )
+
 class Api:
     def __init__(self):
         self.investimentos = []
@@ -38,17 +44,23 @@ class Api:
         
     def iniciar_extracao(self):
         print("Iniciando extração do banco via robô...")
+        driver = None
         try:
             driver, wait = iniciar_navegador()
             verificar_login_por_qrcode(wait)
             dados_brutos = extrair_investimentos(driver)
-            driver.quit()
             
             self.investimentos = _transformar_para_tabela(dados_brutos)
             return self.investimentos
         except Exception as e:
             traceback.print_exc()
             raise Exception(f"Falha na extração: {str(e)}")
+        finally:
+            if driver is not None:
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
 
     def exportar_txt(self, dados_filtrados):
         print(f"Exportando {len(dados_filtrados)} produtos para TXT...")
@@ -62,14 +74,14 @@ class Api:
             title="Salvar relatório",
         )
         if caminho:
-            texto = "\\n".join([f"{d['produto']} | {d['rendimento']} | {d['investimento_minimo']} | {d['vencimento']}" for d in dados_filtrados])
+            texto = _formatar_linhas_relatorio(dados_filtrados)
             with open(caminho, "w", encoding="utf-8") as f:
                 f.write(texto)
         return True
 
     def copiar_dados(self, dados_filtrados):
         print(f"Copiando {len(dados_filtrados)} produtos...")
-        texto = "\\n".join([f"{d['produto']} | {d['rendimento']} | {d['investimento_minimo']} | {d['vencimento']}" for d in dados_filtrados])
+        texto = _formatar_linhas_relatorio(dados_filtrados)
         pyperclip.copy(texto)
         return True
 
