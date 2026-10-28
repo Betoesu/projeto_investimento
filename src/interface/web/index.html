@@ -17,6 +17,7 @@
                         muted: '#94A3B8',
                         accent: '#10B981',
                         accent_bg: 'rgba(16, 185, 129, 0.1)',
+                        accent_solid: '#172d28',
                         border: '#2A3441',
                         row_hover: '#202832'
                     }
@@ -345,11 +346,11 @@
                         <table className="w-full text-left border-collapse">
                             <thead className="bg-card sticky top-0 z-10 border-b border-border shadow-sm">
                                 <tr>
-                                    <th onClick={() => handleSort('produto')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'produto' ? 'text-accent' : 'text-muted'}`}>Produto <span className="ml-1">{getSortIcon('produto')}</span></th>
-                                    <th onClick={() => handleSort('rendimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'rendimento' ? 'text-accent' : 'text-muted'}`}>Rendimento <span className="ml-1">{getSortIcon('rendimento')}</span></th>
-                                    <th onClick={() => handleSort('investimento_minimo')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'investimento_minimo' ? 'text-accent' : 'text-muted'}`}>Inv. Mínimo <span className="ml-1">{getSortIcon('investimento_minimo')}</span></th>
-                                    <th onClick={() => handleSort('isento_ir')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${isentoTop ? 'text-accent bg-accent_bg' : 'text-muted'}`}>Isento Ir <span className="ml-1">{getSortIcon('isento_ir')}</span></th>
-                                    <th onClick={() => handleSort('vencimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-white transition-colors ${sortKey === 'vencimento' ? 'text-accent' : 'text-muted'}`}>Vencimento <span className="ml-1">{getSortIcon('vencimento')}</span></th>
+                                    <th onClick={() => handleSort('produto')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer bg-card hover:bg-row_hover hover:text-accent transition-colors ${sortKey === 'produto' ? 'text-accent' : 'text-muted'}`}>Produto <span className="ml-1">{getSortIcon('produto')}</span></th>
+                                    <th onClick={() => handleSort('rendimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer bg-card hover:bg-row_hover hover:text-accent transition-colors ${sortKey === 'rendimento' ? 'text-accent' : 'text-muted'}`}>Rendimento <span className="ml-1">{getSortIcon('rendimento')}</span></th>
+                                    <th onClick={() => handleSort('investimento_minimo')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer bg-card hover:bg-row_hover hover:text-accent transition-colors ${sortKey === 'investimento_minimo' ? 'text-accent' : 'text-muted'}`}>Inv. Mínimo <span className="ml-1">{getSortIcon('investimento_minimo')}</span></th>
+                                    <th onClick={() => handleSort('isento_ir')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-accent transition-colors ${isentoTop ? 'text-accent bg-accent_solid' : 'text-muted bg-card hover:bg-row_hover'}`}>Isento Ir <span className="ml-1">{getSortIcon('isento_ir')}</span></th>
+                                    <th onClick={() => handleSort('vencimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer bg-card hover:bg-row_hover hover:text-accent transition-colors ${sortKey === 'vencimento' ? 'text-accent' : 'text-muted'}`}>Vencimento <span className="ml-1">{getSortIcon('vencimento')}</span></th>
                                 </tr>
                             </thead>
                             <tbody>
