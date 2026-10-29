@@ -2,7 +2,6 @@ import webview
 import os
 import pyperclip
 import traceback
-from src.extrator_banco import iniciar_navegador, verificar_login_por_qrcode, extrair_investimentos
 
 def _transformar_para_tabela(dados_brutos):
     tabela = []
@@ -44,6 +43,8 @@ class Api:
         
     def iniciar_extracao(self):
         print("Iniciando extração do banco via robô...")
+        # Import tardio (lazy import) para não atrasar a abertura da janela inicial em ~2s
+        from src.extrator_banco import iniciar_navegador, verificar_login_por_qrcode, extrair_investimentos
         driver = None
         try:
             driver, wait = iniciar_navegador()
@@ -89,12 +90,12 @@ def main():
     api = Api()
     caminho_html = os.path.abspath(os.path.join(os.path.dirname(__file__), "web", "index.html"))
     janela = webview.create_window(
-        title="Painel de Investimentos", 
+        title="ZENO - Painel de Investimentos", 
         url="file://" + caminho_html,
         js_api=api,
-        width=1200, 
-        height=700,
-        background_color="#0f1319"
+        width=1380, 
+        height=840,
+        background_color="#0b0e11"
     )
     webview.start()
 

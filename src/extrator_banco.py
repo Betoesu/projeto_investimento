@@ -50,7 +50,7 @@ def extrair_investimentos(driver):
         "mag-identifier": mag_id
     }
 
-    resultado = requests.get(url=url_api, headers=headers)
+    resultado = requests.get(url=url_api, headers=headers, timeout=15)
     resultado.raise_for_status()
 
     data = resultado.json()

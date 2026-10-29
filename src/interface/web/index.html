@@ -3,7 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Investimentos</title>
+    <title>ZENO - Painel de Investimentos</title>
+    <!-- CSS Crítico Instantâneo para evitar atraso visual ao abrir a janela -->
+    <style>
+        body {
+            background-color: #0b0e11;
+            color: #E2E8F0;
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+        /* Personalização da barra de rolagem para combinar com o tema dark */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0e11; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #242c37; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b; 
+        }
+    </style>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,92 +38,113 @@
             theme: {
                 extend: {
                     colors: {
-                        background: '#0f1319',
-                        card: '#181e25',
+                        background: '#0b0e11',
+                        card: '#14181e',
+                        header_bg: '#12161c',
+                        table_head: '#1c222b',
                         primary: '#E2E8F0',
                         muted: '#94A3B8',
-                        accent: '#10B981',
-                        accent_bg: 'rgba(16, 185, 129, 0.1)',
-                        accent_solid: '#172d28',
-                        border: '#2A3441',
-                        row_hover: '#202832'
+                        accent: '#00c47c',
+                        accent_bg: 'rgba(0, 196, 124, 0.1)',
+                        accent_solid: '#102921',
+                        border: '#242c37',
+                        row_hover: '#191f27'
                     }
                 }
             }
         }
     </script>
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- URLs com versão fixa no jsDelivr (Cache imutável em disco, sem redirects 302 lentos do unpkg) -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.24.0/babel.min.js"></script>
 </head>
 <body class="bg-background text-primary font-sans h-screen overflow-hidden select-none">
-    <div id="root" class="h-full"></div>
+    <!-- Skeleton inicial instantâneo (0ms) exibido enquanto o React monta -->
+    <div id="root" class="h-full">
+        <div style="display:flex;flex-direction:column;height:100%;padding:24px;background:#0b0e11;align-items:center;justify-content:center;">
+            <div style="width:290px;height:64px;background:#161b22;border:1px solid #242c37;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:28px;">
+                <svg width="136" height="42" viewBox="0 0 210 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M96 23H71C66.5 23 64 25.5 64 30V31.5" stroke="#10B981" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M64 38.5V40C64 44.5 66.5 47 71 47H96" stroke="#10B981" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="146" y="23" width="32" height="24" rx="8" stroke="#10B981" stroke-width="6"/>
+                    <path d="M24 23H50L24 47H51L63 35H161L185 11" stroke="#E2E8F0" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M175 10H186V21" stroke="#E2E8F0" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M107 47V23L133 47V23" stroke="#10B981" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div style="width:690px;height:396px;background:#161b22;border:1px solid #242c37;border-radius:16px;"></div>
+        </div>
+    </div>
 
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
 
-        // Componente da Logo ZENO fiel à imagem
-        function ZenoLogo({ className = "w-[290px] h-[64px]" }) {
+        // SVG puro da Logo ZENO
+        function ZenoSvg({ width = 136, height = 42 }) {
+            return (
+                <svg width={width} height={height} viewBox="0 0 210 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Letra E (Verde - topo e base arredondados) */}
+                    <path
+                        d="M96 23H71C66.5 23 64 25.5 64 30V31.5"
+                        stroke="#10B981"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+                    <path
+                        d="M64 38.5V40C64 44.5 66.5 47 71 47H96"
+                        stroke="#10B981"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+
+                    {/* Letra O (Verde - cápsula arredondada) */}
+                    <rect
+                        x="146"
+                        y="23"
+                        width="32"
+                        height="24"
+                        rx="8"
+                        stroke="#10B981"
+                        strokeWidth="6"
+                    />
+
+                    {/* Letra Z Branca + Linha de Tendência e Seta atravessando E, N, O */}
+                    <path
+                        d="M24 23H50L24 47H51L63 35H161L185 11"
+                        stroke="#E2E8F0"
+                        strokeWidth="5.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+                    {/* Ponta da seta branca no canto superior direito */}
+                    <path
+                        d="M175 10H186V21"
+                        stroke="#E2E8F0"
+                        strokeWidth="5.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+
+                    {/* Letra N (Verde - sobreposta à linha branca horizontal) */}
+                    <path
+                        d="M107 47V23L133 47V23"
+                        stroke="#10B981"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+                </svg>
+            );
+        }
+
+        // Card da Logo ZENO usado nas 3 telas iniciais e no carregamento
+        function ZenoLogoCard({ className = "w-[290px] h-[64px]" }) {
             return (
                 <div className={`${className} bg-[#161b22] border border-[#242c37] rounded-xl flex items-center justify-center shadow-md`}>
-                    <svg width="136" height="42" viewBox="0 0 210 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        {/* Letra E (Verde - topo e base arredondados) */}
-                        <path
-                            d="M96 23H71C66.5 23 64 25.5 64 30V31.5"
-                            stroke="#10B981"
-                            strokeWidth="6"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                        <path
-                            d="M64 38.5V40C64 44.5 66.5 47 71 47H96"
-                            stroke="#10B981"
-                            strokeWidth="6"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-
-                        {/* Letra O (Verde - cápsula arredondada) */}
-                        <rect
-                            x="146"
-                            y="23"
-                            width="32"
-                            height="24"
-                            rx="8"
-                            stroke="#10B981"
-                            strokeWidth="6"
-                        />
-
-                        {/* Letra Z Branca + Linha de Tendência e Seta atravessando E, N, O */}
-                        <path
-                            d="M24 23H50L24 47H51L63 35H161L185 11"
-                            stroke="#E2E8F0"
-                            strokeWidth="5.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                        {/* Ponta da seta branca no canto superior direito */}
-                        <path
-                            d="M175 10H186V21"
-                            stroke="#E2E8F0"
-                            strokeWidth="5.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-
-                        {/* Letra N (Verde - sobreposta à linha branca horizontal) */}
-                        <path
-                            d="M107 47V23L133 47V23"
-                            stroke="#10B981"
-                            strokeWidth="6"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                    </svg>
+                    <ZenoSvg width={136} height={42} />
                 </div>
             );
         }
@@ -355,19 +403,114 @@
             );
         }
 
+        // Componente de Cabeçalho de Coluna com Hover Detalhado para Ordenação Ativa
+        function SortableHeader({
+            colKey,
+            label,
+            colSpan,
+            align = "center",
+            isActive,
+            icon,
+            activeTitle,
+            activeDescription,
+            actionHint,
+            onClick
+        }) {
+            const alignClass =
+                align === "left"
+                    ? "justify-start"
+                    : align === "right"
+                        ? "justify-end pr-2"
+                        : "justify-center";
+
+            const tooltipPositionClass =
+                align === "left"
+                    ? "left-0"
+                    : align === "right"
+                        ? "right-0"
+                        : "left-1/2 -translate-x-1/2";
+
+            return (
+                <div
+                    onClick={onClick}
+                    className={`${colSpan} relative group flex items-center ${alignClass} cursor-pointer select-none`}
+                >
+                    {/* Pílula interativa da coluna */}
+                    <div
+                        className={`inline-flex items-center px-2.5 py-1 -mx-2.5 -my-1 rounded-md border transition-all duration-150 ${
+                            isActive
+                                ? 'text-[#00c47c] bg-[#00c47c]/10 border-[#00c47c]/30 group-hover:bg-[#00c47c]/20 group-hover:border-[#00c47c] group-hover:shadow-[0_0_12px_rgba(0,196,124,0.2)]'
+                                : 'text-[#cbd5e1] border-transparent group-hover:text-white group-hover:bg-[#252d39] group-hover:border-[#333e4f]'
+                        }`}
+                    >
+                        <span>{label}</span>
+                        <span
+                            className={`ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded text-[11px] font-bold transition-transform duration-150 group-hover:scale-110 ${
+                                isActive
+                                    ? 'bg-[#00c47c] text-[#0b0e11]'
+                                    : 'text-[#94A3B8] group-hover:text-white'
+                            }`}
+                        >
+                            {icon}
+                        </span>
+                    </div>
+
+                    {/* Card de Hover Detalhado quando a ordenação está ativa (ou dica quando inativa) */}
+                    <div
+                        className={`absolute top-full mt-2.5 ${tooltipPositionClass} z-50 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-150 pointer-events-none`}
+                    >
+                        {isActive ? (
+                            <div className="w-64 bg-[#11161c] border border-[#00c47c] rounded-xl p-3.5 shadow-2xl text-left">
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <div className="flex items-center space-x-1.5">
+                                        <span className="w-2 h-2 rounded-full bg-[#00c47c] animate-pulse"></span>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#00c47c]">
+                                            Ordenação Ativa
+                                        </span>
+                                    </div>
+                                    <span className="px-1.5 py-0.5 rounded bg-[#00c47c]/15 text-[#00c47c] text-[10px] font-bold">
+                                        {label} {icon}
+                                    </span>
+                                </div>
+                                <div className="text-xs font-semibold text-white mb-1">
+                                    {activeTitle}
+                                </div>
+                                <p className="text-[11px] text-[#94A3B8] font-normal leading-snug">
+                                    {activeDescription}
+                                </p>
+                                <div className="mt-2.5 pt-2 border-t border-[#1e2631] flex items-center justify-between text-[10px] text-[#cbd5e1]">
+                                    <span>{actionHint}</span>
+                                    <span className="text-[#00c47c] font-bold">Clique ↻</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="w-48 bg-[#141920] border border-[#2a3441] rounded-lg px-3 py-2 shadow-xl text-left">
+                                <div className="text-[10px] font-semibold text-[#94A3B8] uppercase tracking-wider mb-0.5">
+                                    Ordenação Inativa
+                                </div>
+                                <div className="text-[11px] text-white font-normal">
+                                    Clique para ordenar por <strong className="text-[#00c47c]">{label}</strong>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
         function App() {
             const [searchTerm, setSearchTerm] = useState('');
             const [investimentos, setInvestimentos] = useState([]);
             
             // Filtros
-            const [tiposFiltro, setTiposFiltro] = useState([]); // Array de tipos ativos (equivalente aos True do dicionário)
+            const [tiposFiltro, setTiposFiltro] = useState([]); // Array de tipos ativos
             const [invMin, setInvMin] = useState('');
             const [invMax, setInvMax] = useState('');
             const [anoMin, setAnoMin] = useState('');
             const [anoMax, setAnoMax] = useState('');
             const [showFiltrosPanel, setShowFiltrosPanel] = useState(false);
             
-            // Extrai todos os tipos únicos disponíveis nos dados (Equivalente ao Dict Comprehension do Python)
+            // Extrai todos os tipos únicos disponíveis nos dados
             const todosOsTipos = useMemo(() => {
                 const tipos = new Set(investimentos.map(inv => inv.tipo_investimento).filter(Boolean));
                 return Array.from(tipos);
@@ -379,22 +522,19 @@
             const [isentoTop, setIsentoTop] = useState(false); // Toggle especial para Isento IR
             
             const [selectedRow, setSelectedRow] = useState(null);
+            const [expandedRow, setExpandedRow] = useState(null); // Linha aberta com duplo clique
+            const [valorInvestirInput, setValorInvestirInput] = useState(''); // Apenas input visual (sem lógica)
             const [isLoading, setIsLoading] = useState(false);
             const [passoInicial, setPassoInicial] = useState(1);
             const [loadingProgress, setLoadingProgress] = useState(0);
 
             useEffect(() => {
-                lucide.createIcons();
                 window.addEventListener('pywebviewready', function() {
                     window.pywebview.api.obter_investimentos().then(dados => {
                         if (dados && dados.length > 0) setInvestimentos(dados);
                     });
                 });
             }, []);
-
-            useEffect(() => {
-                lucide.createIcons();
-            }, [investimentos, showFiltrosPanel, isLoading, passoInicial]);
 
             useEffect(() => {
                 if (!isLoading) {
@@ -428,12 +568,15 @@
                         setLoadingProgress(100);
                         setInvestimentos([
                             { id: 1, produto: 'LCI 300 DIAS', rendimento: 'Rende até 94% do CDI', investimento_minimo: 'R$ 50,00', isento_ir: true, vencimento: '09/02/2020', tipo_investimento: 'LCI' },
-                            { id: 2, produto: 'CDB TESTE', rendimento: '100% do CDI', investimento_minimo: 'R$ 100,00', isento_ir: false, vencimento: '01/01/2026', tipo_investimento: 'CDB' },
-                            { id: 3, produto: 'LCA TESTE', rendimento: '90% do CDI', investimento_minimo: 'R$ 500,00', isento_ir: true, vencimento: '01/01/2027', tipo_investimento: 'LCA' },
-                            { id: 4, produto: 'CRI NOVO TIPO', rendimento: 'IPCA + 5%', investimento_minimo: 'R$ 1.000,00', isento_ir: true, vencimento: '10/10/2030', tipo_investimento: 'CRI' }
+                            { id: 2, produto: 'LCI DI 720', rendimento: 'Rende até 94% do CDI', investimento_minimo: 'R$ 54,00', isento_ir: true, vencimento: '09/09/2020', tipo_investimento: 'LCI' },
+                            { id: 3, produto: 'LCA ORIGINAL - 90% do CDI', rendimento: 'Rende até 93% do CDI', investimento_minimo: 'R$ 100,00', isento_ir: false, vencimento: '15/02/2027', tipo_investimento: 'LCA' },
+                            { id: 4, produto: 'LCI 550 DIAS', rendimento: 'Rende até 10% do CDI', investimento_minimo: 'R$ 50,00', isento_ir: true, vencimento: '20/09/2021', tipo_investimento: 'LCI' },
+                            { id: 5, produto: 'LCI LIQUIDEZ 15 MESES', rendimento: 'Rende até 95% do CDI', investimento_minimo: 'R$ 50,00', isento_ir: true, vencimento: '20/09/2021', tipo_investimento: 'LCI' },
+                            { id: 6, produto: 'LCI LIQUIDEZ 9 MESES', rendimento: 'Rende até 0,25 do CDI', investimento_minimo: 'R$ 56,00', isento_ir: true, vencimento: '22/09/2029', tipo_investimento: 'LCI' },
+                            { id: 7, produto: 'LCI PRE 1000 DIAS', rendimento: 'Rende até 12.99% a.a.', investimento_minimo: 'R$ 56,00', isento_ir: true, vencimento: '04/06/2029', tipo_investimento: 'LCI' }
                         ]);
                         setIsLoading(false);
-                    }, 2500);
+                    }, 2000);
                 }
             };
 
@@ -493,7 +636,7 @@
             };
 
             const filteredAndSortedInvestimentos = useMemo(() => {
-                // 1. Filtragem (Aplicando exatamente a lógica: se não há filtro ativo, mostra todos, senão filtra os True)
+                // 1. Filtragem
                 const nenhum_filtro_ativo = tiposFiltro.length === 0;
 
                 let filtrados = investimentos.filter(inv => {
@@ -524,7 +667,6 @@
                             valA = extrairValorNumerico(a.investimento_minimo);
                             valB = extrairValorNumerico(b.investimento_minimo);
                         } else if (sortKey === 'vencimento') {
-                            // Gambiarra rápida para datas dd/mm/yyyy
                             const dateA = a.vencimento === '-' ? 0 : new Date(a.vencimento.split('/').reverse().join('-')).getTime();
                             const dateB = b.vencimento === '-' ? 0 : new Date(b.vencimento.split('/').reverse().join('-')).getTime();
                             valA = dateA || 0; valB = dateB || 0;
@@ -546,7 +688,7 @@
                     filtrados.sort((a, b) => {
                         const aIsento = a.isento_ir ? 1 : 0;
                         const bIsento = b.isento_ir ? 1 : 0;
-                        return bIsento - aIsento; // Desce os 0 (Não), Sobe os 1 (Sim)
+                        return bIsento - aIsento;
                     });
                 }
 
@@ -558,7 +700,6 @@
                 if (sortKey !== key) return '↕';
                 
                 if (['rendimento', 'investimento_minimo', 'vencimento'].includes(key)) {
-                    // Para essas colunas, decrescente = ↑ (maiores no topo)
                     return sortDirection === 'desc' ? '↑' : '↓';
                 }
                 return sortDirection === 'asc' ? '↑' : '↓';
@@ -572,13 +713,22 @@
                 }
             };
 
+            const handleDoubleClickRow = (rowKey) => {
+                if (expandedRow === rowKey) {
+                    setExpandedRow(null);
+                } else {
+                    setExpandedRow(rowKey);
+                    setValorInvestirInput('');
+                }
+            };
+
             // Tela inicial (3 Passos de Onboarding) ou Tela de Carregamento com Logo e Barra
             if (investimentos.length === 0) {
                 return (
-                    <div className="flex flex-col h-full p-6 bg-[#0d1117] items-center justify-center">
+                    <div className="flex flex-col h-full p-6 bg-[#0b0e11] items-center justify-center">
                         {/* Logo ZENO sempre visível nas 3 telas iniciais e na tela de carregamento */}
                         <div className="mb-7">
-                            <ZenoLogo />
+                            <ZenoLogoCard />
                         </div>
 
                         {isLoading ? (
@@ -695,40 +845,55 @@
                 );
             }
 
+            // Tela de Resultados (Dashboard de Investimentos)
             return (
-                <div className="flex flex-col h-full p-6 bg-background">
-                    {/* Header */}
-                    <div className="flex justify-between items-center mb-6">
-                        <h1 className="text-2xl font-bold text-white">Painel de Investimentos</h1>
+                <div className="flex flex-col h-full bg-[#0b0e11]">
+                    {/* Top Navbar com Logo ZENO, Busca, Filtros e Contador */}
+                    <div className="flex justify-between items-center px-10 py-4 bg-[#12161c] border-b border-[#1c232d] shrink-0">
+                        <div className="flex items-center">
+                            <ZenoSvg width={118} height={36} />
+                        </div>
                         
-                        <div className="flex items-center space-x-4 flex-1 justify-center max-w-lg mx-auto relative">
+                        <div className="flex items-center justify-center w-[360px] relative">
                             <div className="relative w-full">
-                                <i data-lucide="search" className="absolute left-3 top-2.5 w-4 h-4 text-muted"></i>
+                                <svg className="absolute left-3.5 top-3 w-4 h-4 text-[#64748b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                </svg>
                                 <input 
                                     type="text" 
-                                    placeholder="Pesquisar produto..." 
-                                    className="w-full bg-card border border-border rounded-md py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-accent text-white"
+                                    placeholder="Pesquisar produto" 
+                                    className="w-full bg-[#1b212a] border border-[#262f3b] rounded-lg py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-accent text-white placeholder-[#64748b]"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center space-x-4 relative">
+                        <div className="flex items-center space-x-3.5 relative">
                             <button 
                                 onClick={() => setShowFiltrosPanel(!showFiltrosPanel)}
-                                className={`flex items-center px-4 py-2 bg-transparent border text-sm rounded-md transition-colors ${showFiltrosPanel ? 'border-accent text-accent bg-accent_bg' : 'border-border text-muted hover:border-accent hover:text-accent'}`}>
-                                <i data-lucide="filter" className="w-4 h-4 mr-2"></i>
-                                Filtros
-                                <i data-lucide={showFiltrosPanel ? "chevron-up" : "chevron-down"} className="w-4 h-4 ml-2"></i>
+                                className="flex items-center px-4 py-2.5 bg-[#0f241e] border border-[#145940] hover:border-[#00c47c] text-white text-sm rounded-lg transition-colors">
+                                <svg className="w-4 h-4 mr-2.5 text-[#00c47c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                                </svg>
+                                <span>Filtros</span>
+                                <svg className="w-4 h-4 ml-2.5 text-[#00c47c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    {showFiltrosPanel ? (
+                                        <polyline points="18 15 12 9 6 15" />
+                                    ) : (
+                                        <polyline points="6 9 12 15 18 9" />
+                                    )}
+                                </svg>
                             </button>
-                            <div className="px-4 py-2 bg-accent_bg text-accent rounded-md text-sm font-medium">
+
+                            <div className="px-5 py-2.5 bg-[#102921] border border-[#144937] text-[#e2e8f0] rounded-lg text-sm font-medium">
                                 {filteredAndSortedInvestimentos.length} Produtos Encontrados
                             </div>
 
                             {/* Painel de Filtros Avançados */}
                             {showFiltrosPanel && (
-                                <div className="absolute top-12 right-[180px] bg-card border border-border rounded-lg p-4 shadow-xl z-50 w-80">
+                                <div className="absolute top-14 right-[200px] bg-[#161b22] border border-[#26303d] rounded-xl p-5 shadow-2xl z-50 w-80">
                                     <div className="mb-4">
                                         <label className="text-xs text-muted font-bold uppercase mb-2 block">Tipos de Investimento</label>
                                         <div className="flex flex-wrap gap-2">
@@ -737,7 +902,7 @@
                                                 return (
                                                     <div key={f} 
                                                         onClick={() => toggleTipoFiltro(f)}
-                                                        className={`px-3 py-1 border rounded-full text-xs cursor-pointer transition-colors ${isActive ? 'bg-accent_bg border-accent text-accent' : 'bg-transparent border-border text-muted hover:text-white'}`}>
+                                                        className={`px-3.5 py-1 border rounded-full text-xs cursor-pointer transition-colors ${isActive ? 'bg-accent_bg border-accent text-accent' : 'bg-transparent border-border text-muted hover:text-white'}`}>
                                                         {f}
                                                     </div>
                                                 );
@@ -748,15 +913,15 @@
                                     <div className="mb-4">
                                         <label className="text-xs text-muted font-bold uppercase mb-2 block">Investimento (R$)</label>
                                         <div className="flex space-x-2">
-                                            <input type="text" placeholder="Mínimo" value={invMin} onChange={e => setInvMin(e.target.value)} className="w-1/2 bg-background border border-border rounded px-2 py-1 text-sm text-white focus:border-accent outline-none" />
-                                            <input type="text" placeholder="Máximo" value={invMax} onChange={e => setInvMax(e.target.value)} className="w-1/2 bg-background border border-border rounded px-2 py-1 text-sm text-white focus:border-accent outline-none" />
+                                            <input type="text" placeholder="Mínimo" value={invMin} onChange={e => setInvMin(e.target.value)} className="w-1/2 bg-[#0b0e11] border border-border rounded-md px-2.5 py-1.5 text-sm text-white focus:border-accent outline-none" />
+                                            <input type="text" placeholder="Máximo" value={invMax} onChange={e => setInvMax(e.target.value)} className="w-1/2 bg-[#0b0e11] border border-border rounded-md px-2.5 py-1.5 text-sm text-white focus:border-accent outline-none" />
                                         </div>
                                     </div>
                                     <div className="mb-4">
                                         <label className="text-xs text-muted font-bold uppercase mb-2 block">Vencimento (Ano)</label>
                                         <div className="flex space-x-2">
-                                            <input type="text" placeholder="Ano Mín" value={anoMin} onChange={e => setAnoMin(e.target.value)} className="w-1/2 bg-background border border-border rounded px-2 py-1 text-sm text-white focus:border-accent outline-none" />
-                                            <input type="text" placeholder="Ano Máx" value={anoMax} onChange={e => setAnoMax(e.target.value)} className="w-1/2 bg-background border border-border rounded px-2 py-1 text-sm text-white focus:border-accent outline-none" />
+                                            <input type="text" placeholder="Ano Mín" value={anoMin} onChange={e => setAnoMin(e.target.value)} className="w-1/2 bg-[#0b0e11] border border-border rounded-md px-2.5 py-1.5 text-sm text-white focus:border-accent outline-none" />
+                                            <input type="text" placeholder="Ano Máx" value={anoMax} onChange={e => setAnoMax(e.target.value)} className="w-1/2 bg-[#0b0e11] border border-border rounded-md px-2.5 py-1.5 text-sm text-white focus:border-accent outline-none" />
                                         </div>
                                     </div>
                                     <div className="flex justify-end">
@@ -767,78 +932,210 @@
                         </div>
                     </div>
 
-                    {/* Active Filters */}
-                    {tiposFiltro.length > 0 && (
-                        <div className="flex items-center mb-4">
-                            <span className="text-sm text-muted mr-3">Filtros Selecionados</span>
-                            <div className="flex space-x-2">
-                                {tiposFiltro.map(f => (
-                                    <div key={f} 
-                                        className="group flex items-center px-3 py-1 border border-border bg-card rounded-full text-xs transition-colors hover:bg-row_hover cursor-pointer"
-                                        title="Clique para remover"
-                                        onClick={() => toggleTipoFiltro(f)}
-                                    >
-                                        <span className="text-primary">{f}</span>
-                                        <button className="hidden group-hover:block ml-2 text-muted hover:text-white">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        </button>
-                                    </div>
-                                ))}
+                    {/* Barra de Filtros Selecionados */}
+                    <div className="px-10 pt-5 pb-2 shrink-0 min-h-[48px] flex items-center">
+                        {tiposFiltro.length > 0 && (
+                            <div className="flex items-center">
+                                <span className="text-xs text-[#64748b] mr-3.5">Filtros Selecionados</span>
+                                <div className="flex space-x-2.5">
+                                    {tiposFiltro.map(f => (
+                                        <div
+                                            key={f} 
+                                            className="flex items-center px-3.5 py-1.5 border border-[#28313e] bg-[#161b22] rounded-full text-xs transition-colors hover:bg-[#1e2530] cursor-pointer"
+                                            title="Clique para remover"
+                                            onClick={() => toggleTipoFiltro(f)}
+                                        >
+                                            <span className="text-white font-medium">{f}</span>
+                                            <span className="ml-2.5 text-[#64748b] hover:text-white leading-none">×</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    )}
-
-                    {/* Table Container */}
-                    <div className="flex-1 overflow-auto bg-card rounded-lg border border-border custom-scrollbar">
-                        <table className="w-full text-left border-collapse">
-                            <thead className="bg-card sticky top-0 z-10 border-b border-border shadow-sm">
-                                <tr>
-                                    <th onClick={() => handleSort('produto')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer bg-card hover:bg-row_hover hover:text-accent transition-colors ${sortKey === 'produto' ? 'text-accent' : 'text-muted'}`}>Produto <span className="ml-1">{getSortIcon('produto')}</span></th>
-                                    <th onClick={() => handleSort('rendimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer bg-card hover:bg-row_hover hover:text-accent transition-colors ${sortKey === 'rendimento' ? 'text-accent' : 'text-muted'}`}>Rendimento <span className="ml-1">{getSortIcon('rendimento')}</span></th>
-                                    <th onClick={() => handleSort('investimento_minimo')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer bg-card hover:bg-row_hover hover:text-accent transition-colors ${sortKey === 'investimento_minimo' ? 'text-accent' : 'text-muted'}`}>Inv. Mínimo <span className="ml-1">{getSortIcon('investimento_minimo')}</span></th>
-                                    <th onClick={() => handleSort('isento_ir')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer hover:text-accent transition-colors ${isentoTop ? 'text-accent bg-accent_solid' : 'text-muted bg-card hover:bg-row_hover'}`}>Isento Ir <span className="ml-1">{getSortIcon('isento_ir')}</span></th>
-                                    <th onClick={() => handleSort('vencimento')} className={`py-4 px-6 text-xs font-semibold uppercase tracking-wider cursor-pointer bg-card hover:bg-row_hover hover:text-accent transition-colors ${sortKey === 'vencimento' ? 'text-accent' : 'text-muted'}`}>Vencimento <span className="ml-1">{getSortIcon('vencimento')}</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredAndSortedInvestimentos.map((inv) => (
-                                    <tr 
-                                        key={inv.id || inv.produto + inv.vencimento} 
-                                        onClick={() => setSelectedRow(inv.id || inv.produto)}
-                                        className={`border-b border-border transition-colors cursor-pointer ${
-                                            selectedRow === (inv.id || inv.produto) 
-                                                ? 'bg-row_hover ring-1 ring-inset ring-accent' 
-                                                : 'hover:bg-row_hover'
-                                        }`}
-                                    >
-                                        <td className="py-4 px-6 text-sm whitespace-nowrap">{inv.produto}</td>
-                                        <td className="py-4 px-6 text-sm text-muted whitespace-nowrap">{inv.rendimento}</td>
-                                        <td className="py-4 px-6 text-sm text-muted whitespace-nowrap">{inv.investimento_minimo}</td>
-                                        <td className="py-4 px-6 text-sm whitespace-nowrap">
-                                            <div className="flex items-center">
-                                                <span className={`w-2 h-2 rounded-full mr-2 ${inv.isento_ir ? 'bg-accent' : 'bg-muted'}`}></span>
-                                                {inv.isento_ir ? 'Sim' : 'Não'}
-                                            </div>
-                                        </td>
-                                        <td className="py-4 px-6 text-sm text-muted whitespace-nowrap">{inv.vencimento}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        )}
                     </div>
 
-                    {/* Bottom Actions */}
-                    <div className="mt-4 flex space-x-3">
+                    {/* Container Principal da Tabela (min-h-0 permite que o popover de hover não seja cortado) */}
+                    <div className="flex-1 min-h-0 px-16 py-3 flex flex-col">
+                        {/* Cabeçalho da Tabela com Hover Detalhado */}
+                        <div className="grid grid-cols-12 bg-[#1c222b] rounded-t-lg py-4 px-7 text-xs font-semibold text-[#cbd5e1] border-b border-[#252d38] shrink-0 relative z-20">
+                            <SortableHeader
+                                colKey="produto"
+                                label="Produto"
+                                colSpan="col-span-4"
+                                align="left"
+                                isActive={sortKey === 'produto'}
+                                icon={getSortIcon('produto')}
+                                activeTitle={sortDirection === 'asc' ? 'Ordem Alfabética (A → Z)' : 'Ordem Alfabética Inversa (Z → A)'}
+                                activeDescription={sortDirection === 'asc' ? 'Listando os investimentos em sequência alfabética de A até Z.' : 'Listando os investimentos em sequência alfabética inversa de Z até A.'}
+                                actionHint="Inverter ordem alfabética"
+                                onClick={() => handleSort('produto')}
+                            />
+
+                            <SortableHeader
+                                colKey="rendimento"
+                                label="Rendimento"
+                                colSpan="col-span-3"
+                                align="center"
+                                isActive={sortKey === 'rendimento'}
+                                icon={getSortIcon('rendimento')}
+                                activeTitle={sortDirection === 'desc' ? 'Maior Rendimento no Topo (↑)' : 'Menor Rendimento no Topo (↓)'}
+                                activeDescription={sortDirection === 'desc' ? 'Priorizando os títulos com as maiores taxas (% CDI, IPCA+ ou a.a.) primeiro.' : 'Exibindo os títulos com as menores taxas de retorno primeiro.'}
+                                actionHint="Alternar maior / menor taxa"
+                                onClick={() => handleSort('rendimento')}
+                            />
+
+                            <SortableHeader
+                                colKey="investimento_minimo"
+                                label="Inv. Mínimo"
+                                colSpan="col-span-2"
+                                align="center"
+                                isActive={sortKey === 'investimento_minimo'}
+                                icon={getSortIcon('investimento_minimo')}
+                                activeTitle={sortDirection === 'desc' ? 'Maior Aporte Mínimo no Topo (↑)' : 'Menor Aporte Mínimo no Topo (↓)'}
+                                activeDescription={sortDirection === 'desc' ? 'Ordenando do maior valor mínimo exigido para o mais acessível.' : 'Ordenando dos investimentos mais acessíveis para os de maior aporte.'}
+                                actionHint="Alternar maior / menor valor"
+                                onClick={() => handleSort('investimento_minimo')}
+                            />
+
+                            <SortableHeader
+                                colKey="isento_ir"
+                                label="Isento Ir"
+                                colSpan="col-span-1"
+                                align="center"
+                                isActive={isentoTop}
+                                icon={getSortIcon('isento_ir')}
+                                activeTitle="Priorizando Isentos de IR (↑)"
+                                activeDescription="Investimentos isentos de Imposto de Renda (Sim) estão fixados no topo da tabela."
+                                actionHint="Desativar priorização de isentos"
+                                onClick={() => handleSort('isento_ir')}
+                            />
+
+                            <SortableHeader
+                                colKey="vencimento"
+                                label="Vencimento"
+                                colSpan="col-span-2"
+                                align="right"
+                                isActive={sortKey === 'vencimento'}
+                                icon={getSortIcon('vencimento')}
+                                activeTitle={sortDirection === 'desc' ? 'Prazo Mais Longo no Topo (↑)' : 'Prazo Mais Curto no Topo (↓)'}
+                                activeDescription={sortDirection === 'desc' ? 'Exibindo primeiro os títulos com data de vencimento mais distante.' : 'Exibindo primeiro os títulos com data de vencimento mais próxima.'}
+                                actionHint="Alternar prazo longo / curto"
+                                onClick={() => handleSort('vencimento')}
+                            />
+                        </div>
+
+                        {/* Lista de Investimentos com suporte a Duplo Clique para abrir o Simulador */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1.5 pt-1.5 pr-0.5">
+                            {filteredAndSortedInvestimentos.map((inv) => {
+                                const rowKey = inv.id || (inv.produto + inv.vencimento);
+                                const isExpanded = expandedRow === rowKey;
+                                const isSelected = selectedRow === rowKey;
+
+                                return (
+                                    <div
+                                        key={rowKey}
+                                        onClick={() => setSelectedRow(rowKey)}
+                                        onDoubleClick={() => handleDoubleClickRow(rowKey)}
+                                        title="Clique duas vezes para abrir a simulação"
+                                        className={`rounded-md transition-all cursor-pointer ${
+                                            isExpanded
+                                                ? 'bg-[#14181e] border border-[#00c47c] shadow-lg shadow-[#00c47c]/5'
+                                                : isSelected
+                                                    ? 'bg-[#191f27] border border-[#2a3441]'
+                                                    : 'bg-[#14181e] border border-transparent hover:bg-[#181d24]'
+                                        }`}
+                                    >
+                                        {/* Linha Principal do Investimento */}
+                                        <div className="grid grid-cols-12 items-center py-5 px-7 text-sm">
+                                            <div className="col-span-4 text-[#e2e8f0] font-normal truncate pr-4">
+                                                {inv.produto}
+                                            </div>
+                                            <div className="col-span-3 text-[#94A3B8] text-center">
+                                                {inv.rendimento}
+                                            </div>
+                                            <div className="col-span-2 text-[#94A3B8] text-center">
+                                                {inv.investimento_minimo}
+                                            </div>
+                                            <div className="col-span-1 flex items-center justify-center">
+                                                <span className={`w-2 h-2 rounded-full mr-2 ${inv.isento_ir ? 'bg-[#00c47c]' : 'bg-[#64748b]'}`}></span>
+                                                <span className={inv.isento_ir ? 'text-[#00c47c]' : 'text-[#64748b]'}>
+                                                    {inv.isento_ir ? 'Sim' : 'Não'}
+                                                </span>
+                                            </div>
+                                            <div className="col-span-2 text-[#94A3B8] text-right pr-2">
+                                                {inv.vencimento}
+                                            </div>
+                                        </div>
+
+                                        {/* Painel Expandido no Duplo Clique (Apenas Input e Retornos Zerados) */}
+                                        {isExpanded && (
+                                            <div
+                                                className="px-7 pb-5 pt-1"
+                                                onClick={(e) => e.stopPropagation()}
+                                                onDoubleClick={(e) => e.stopPropagation()}
+                                            >
+                                                <label className="block text-xs text-[#94A3B8] mb-2">
+                                                    Quanto quer investir?
+                                                </label>
+                                                <div className="flex items-center justify-between">
+                                                    {/* Input de Valor */}
+                                                    <div className="w-[43%]">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="R$ 0,00"
+                                                            value={valorInvestirInput}
+                                                            onChange={(e) => setValorInvestirInput(e.target.value)}
+                                                            className="w-full bg-[#181e25] border border-[#00c47c] rounded-md px-4 py-2.5 text-sm text-white placeholder-[#64748b] focus:outline-none focus:ring-1 focus:ring-[#00c47c]"
+                                                        />
+                                                    </div>
+
+                                                    {/* Retorno Bruto (Zerado) */}
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs text-[#94A3B8] mb-0.5">Retorno Bruto</span>
+                                                        <span className="text-lg font-medium text-[#00c47c]">R$ 0,00</span>
+                                                    </div>
+
+                                                    {/* Retorno Líquido (Zerado) */}
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs text-[#94A3B8] mb-0.5">Retorno Liquído</span>
+                                                        <span className="text-lg font-medium text-[#00c47c]">R$ 0,00</span>
+                                                    </div>
+
+                                                    {/* Seta Verde Direita */}
+                                                    <button
+                                                        type="button"
+                                                        className="text-[#00c47c] hover:text-[#00e08e] transition-colors p-2 mr-4 cursor-pointer"
+                                                    >
+                                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <line x1="5" y1="12" x2="19" y2="12" />
+                                                            <polyline points="12 5 19 12 12 19" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Rodapé com Botões Exportar TXT e Copiar */}
+                    <div className="px-10 py-4 bg-[#0e1217] border-t border-[#1c232d] flex items-center space-x-3.5 shrink-0">
                         <button 
                             onClick={() => window.pywebview && window.pywebview.api.exportar_txt(filteredAndSortedInvestimentos)}
-                            className="flex items-center px-4 py-2 bg-transparent border border-border text-white rounded-md text-sm hover:bg-card transition-colors"
+                            className="flex items-center px-5 py-2.5 bg-[#14181e] border border-[#262f3b] text-[#cbd5e1] rounded-md text-xs font-medium hover:bg-[#1c222b] hover:text-white transition-colors"
                         >
-                            <i data-lucide="download" className="w-4 h-4 mr-2"></i>
+                            <svg className="w-3.5 h-3.5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
                             Exportar TXT
                         </button>
                         <button 
                             onClick={() => window.pywebview && window.pywebview.api.copiar_dados(filteredAndSortedInvestimentos)}
-                            className="flex items-center px-4 py-2 bg-card border border-border text-white rounded-md text-sm hover:bg-row_hover transition-colors"
+                            className="flex items-center justify-center px-10 py-2.5 bg-[#00a86b] hover:bg-[#00c47c] text-white rounded-md text-xs font-semibold transition-colors"
                         >
                             Copiar
                         </button>
@@ -850,22 +1147,5 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
-    <style>
-        /* Personalização da barra de rolagem para combinar com o tema dark */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #181e25; 
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #2A3441; 
-            border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94A3B8; 
-        }
-    </style>
 </body>
 </html>
