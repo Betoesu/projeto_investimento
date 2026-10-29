@@ -2,6 +2,7 @@ import webview
 import os
 import pyperclip
 import traceback
+import threading
 
 def _transformar_para_tabela(dados_brutos):
     tabela = []
@@ -37,23 +38,96 @@ def _formatar_linhas_relatorio(dados_filtrados):
 class Api:
     def __init__(self):
         self.investimentos = []
+        self.status_extracao = {
+            "etapa": "idle",
+            "progresso": 0,
+            "titulo": "Sincronizando com o Banco",
+            "mensagem": "Preparando conexão...",
+            "subtitulo": "Iniciando processo..."
+        }
+        # Pré-carrega os módulos pesados (seleniumwire/selenium) em segundo plano
+        # enquanto o usuário está nas telas de instruções, para que ao clicar
+        # em "Próximo" na última etapa o navegador do Inter abra imediatamente.
+        threading.Thread(target=self._precarregar_extrator, daemon=True).start()
+
+    def _precarregar_extrator(self):
+        try:
+            import src.extrator_banco  # noqa: F401
+        except Exception:
+            pass
+
+    def _atualizar_status(self, etapa, progresso, titulo, mensagem, subtitulo):
+        self.status_extracao = {
+            "etapa": etapa,
+            "progresso": progresso,
+            "titulo": titulo,
+            "mensagem": mensagem,
+            "subtitulo": subtitulo
+        }
+
+    def obter_status_extracao(self):
+        return self.status_extracao
 
     def obter_investimentos(self):
         return self.investimentos
         
     def iniciar_extracao(self):
         print("Iniciando extração do banco via robô...")
-        # Import tardio (lazy import) para não atrasar a abertura da janela inicial em ~2s
+        self._atualizar_status(
+            etapa="abrindo_navegador",
+            progresso=8,
+            titulo="Abrindo o Banco Inter",
+            mensagem="Iniciando o navegador e carregando a página de acesso do Inter...",
+            subtitulo="Aguarde a abertura da janela do Chrome"
+        )
         from src.extrator_banco import iniciar_navegador, verificar_login_por_qrcode, extrair_investimentos
         driver = None
         try:
             driver, wait = iniciar_navegador()
+
+            self._atualizar_status(
+                etapa="aguardando_qrcode",
+                progresso=35,
+                titulo="Aguardando Leitura do QR Code",
+                mensagem="Navegador aberto! Escaneie o QR Code exibido na tela do Inter com seu celular...",
+                subtitulo="Acompanhe e autentique pelo navegador Chrome aberto"
+            )
             verificar_login_por_qrcode(wait)
+
+            self._atualizar_status(
+                etapa="extraindo_dados",
+                progresso=75,
+                titulo="Extraindo Investimentos",
+                mensagem="Login confirmado! Capturando os produtos de Renda Fixa disponíveis...",
+                subtitulo="Sincronizando catálogo de investimentos"
+            )
             dados_brutos = extrair_investimentos(driver)
             
+            self._atualizar_status(
+                etapa="processando",
+                progresso=95,
+                titulo="Processando Dados",
+                mensagem="Formatando e organizando a tabela de investimentos...",
+                subtitulo="Quase pronto"
+            )
             self.investimentos = _transformar_para_tabela(dados_brutos)
+
+            self._atualizar_status(
+                etapa="concluido",
+                progresso=100,
+                titulo="Sincronização Concluída",
+                mensagem="Investimentos carregados com sucesso!",
+                subtitulo="Concluído"
+            )
             return self.investimentos
         except Exception as e:
+            self._atualizar_status(
+                etapa="erro",
+                progresso=0,
+                titulo="Falha na Sincronização",
+                mensagem=str(e),
+                subtitulo="Tente novamente"
+            )
             traceback.print_exc()
             raise Exception(f"Falha na extração: {str(e)}")
         finally:

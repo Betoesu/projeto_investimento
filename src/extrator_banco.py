@@ -12,6 +12,7 @@ def iniciar_navegador():
     """Configura e abre o navegador, retornando as instâncias necessárias."""
     options = webdriver.ChromeOptions()
     options.add_experimental_option("detach", True)
+    options.page_load_strategy = "eager"
     options.add_argument("--start-maximized")
 
     driver = webdriver.Chrome(options=options)

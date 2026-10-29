@@ -527,6 +527,10 @@
             const [isLoading, setIsLoading] = useState(false);
             const [passoInicial, setPassoInicial] = useState(1);
             const [loadingProgress, setLoadingProgress] = useState(0);
+            const [loadingEtapa, setLoadingEtapa] = useState('abrindo_navegador');
+            const [loadingTitulo, setLoadingTitulo] = useState('Abrindo o Banco Inter');
+            const [loadingMensagem, setLoadingMensagem] = useState('Iniciando o navegador e carregando a página de acesso do Inter...');
+            const [loadingSubtitulo, setLoadingSubtitulo] = useState('Aguarde a abertura da janela do Chrome');
 
             useEffect(() => {
                 window.addEventListener('pywebviewready', function() {
@@ -541,19 +545,65 @@
                     setLoadingProgress(0);
                     return;
                 }
-                setLoadingProgress(15);
+
+                let isMounted = true;
                 const interval = setInterval(() => {
-                    setLoadingProgress(prev => {
-                        if (prev >= 92) return prev;
-                        const increment = prev < 50 ? 7 : prev < 75 ? 3 : 1;
-                        return Math.min(92, prev + increment);
-                    });
-                }, 350);
-                return () => clearInterval(interval);
+                    if (window.pywebview && window.pywebview.api && window.pywebview.api.obter_status_extracao) {
+                        window.pywebview.api.obter_status_extracao().then(status => {
+                            if (!isMounted || !status) return;
+
+                            if (status.etapa) setLoadingEtapa(status.etapa);
+                            if (status.titulo) setLoadingTitulo(status.titulo);
+                            if (status.mensagem) setLoadingMensagem(status.mensagem);
+                            if (status.subtitulo) setLoadingSubtitulo(status.subtitulo);
+
+                            setLoadingProgress(prev => {
+                                const baseBackend = Number(status.progresso) || 0;
+                                const atual = Math.max(prev, baseBackend);
+
+                                // Tetos reais de cada etapa do processo:
+                                // 1. abrindo_navegador: 8% -> 30% (só avança além de 30% quando a janela do Inter abrir)
+                                // 2. aguardando_qrcode: 35% -> 70% (só avança além de 70% quando o login QR Code for concluído)
+                                // 3. extraindo_dados: 75% -> 92% (enquanto captura os produtos na API do Inter)
+                                // 4. processando / concluido: 95% -> 100%
+                                if (status.etapa === 'abrindo_navegador') {
+                                    return Math.min(30, atual + 1.5);
+                                }
+                                if (status.etapa === 'aguardando_qrcode') {
+                                    return Math.min(70, atual + 0.4);
+                                }
+                                if (status.etapa === 'extraindo_dados') {
+                                    return Math.min(92, atual + 2);
+                                }
+                                if (status.etapa === 'processando') {
+                                    return Math.min(98, Math.max(atual, 95));
+                                }
+                                if (status.etapa === 'concluido') {
+                                    return 100;
+                                }
+                                return atual;
+                            });
+                        }).catch(() => {});
+                    } else {
+                        setLoadingProgress(prev => Math.min(92, prev + 5));
+                    }
+                }, 300);
+
+                return () => {
+                    isMounted = false;
+                    clearInterval(interval);
+                };
             }, [isLoading]);
 
             const iniciarExtracao = () => {
+                // Dispara imediatamente a abertura do Inter e sincroniza a barra na Etapa 1
+                setLoadingEtapa('abrindo_navegador');
+                setLoadingProgress(8);
+                setLoadingTitulo('Abrindo o Banco Inter');
+                setLoadingMensagem('Iniciando o navegador e carregando a página de acesso do Inter...');
+                setLoadingSubtitulo('Aguarde a abertura da janela do Chrome');
                 setIsLoading(true);
+
                 if (window.pywebview) {
                     window.pywebview.api.iniciar_extracao().then(dados => {
                         setLoadingProgress(100);
@@ -724,6 +774,11 @@
 
             // Tela inicial (3 Passos de Onboarding) ou Tela de Carregamento com Logo e Barra
             if (investimentos.length === 0) {
+                const etapaIndex =
+                    loadingEtapa === 'abrindo_navegador' ? 1 :
+                    loadingEtapa === 'aguardando_qrcode' ? 2 : 3;
+                const progressoArredondado = Math.round(loadingProgress);
+
                 return (
                     <div className="flex flex-col h-full p-6 bg-[#0b0e11] items-center justify-center">
                         {/* Logo ZENO sempre visível nas 3 telas iniciais e na tela de carregamento */}
@@ -732,25 +787,53 @@
                         </div>
 
                         {isLoading ? (
-                            <div className="w-[540px] bg-[#161b22] border border-[#242c37] rounded-2xl p-10 flex flex-col items-center shadow-2xl">
-                                <h2 className="text-xl font-bold text-white mb-2">Sincronizando com o Banco</h2>
-                                <p className="text-sm text-[#8b95a5] text-center mb-6">
-                                    Aguardando leitura do QR Code e extração dos investimentos...
+                            <div className="w-[560px] bg-[#161b22] border border-[#242c37] rounded-2xl p-9 flex flex-col items-center shadow-2xl">
+                                {/* Indicador de Etapas Reais do Processo */}
+                                <div className="w-full grid grid-cols-3 gap-2 mb-6">
+                                    {[
+                                        { id: 1, label: '1. Abrir Inter' },
+                                        { id: 2, label: '2. Ler QR Code' },
+                                        { id: 3, label: '3. Extrair Dados' }
+                                    ].map(stepInfo => {
+                                        const concluida = etapaIndex > stepInfo.id;
+                                        const ativa = etapaIndex === stepInfo.id;
+                                        return (
+                                            <div
+                                                key={stepInfo.id}
+                                                className={`flex items-center justify-center py-1.5 px-2.5 rounded-lg border text-xs font-semibold transition-all ${
+                                                    ativa
+                                                        ? 'bg-[#00c47c]/15 border-[#00c47c] text-[#00c47c]'
+                                                        : concluida
+                                                            ? 'bg-[#102921] border-[#144937] text-[#e2e8f0]'
+                                                            : 'bg-[#1b212a] border-[#262f3b] text-[#64748b]'
+                                                }`}
+                                            >
+                                                {concluida && <span className="mr-1.5 text-[#00c47c]">✓</span>}
+                                                {ativa && <span className="w-1.5 h-1.5 rounded-full bg-[#00c47c] animate-ping mr-2"></span>}
+                                                <span>{stepInfo.label}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                <h2 className="text-xl font-bold text-white mb-2">{loadingTitulo}</h2>
+                                <p className="text-sm text-[#8b95a5] text-center mb-6 min-h-[20px]">
+                                    {loadingMensagem}
                                 </p>
 
-                                {/* Barra de Carregamento */}
+                                {/* Barra de Carregamento Conexa ao Processo */}
                                 <div className="w-full bg-[#232b36] h-3 rounded-full overflow-hidden border border-[#2c3542] mb-3">
                                     <div
                                         className="h-full bg-[#00c47c] rounded-full transition-all duration-300 ease-out relative overflow-hidden"
-                                        style={{ width: `${loadingProgress}%` }}
+                                        style={{ width: `${progressoArredondado}%` }}
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-pulse"></div>
                                     </div>
                                 </div>
 
                                 <div className="w-full flex justify-between items-center text-xs text-[#8b95a5]">
-                                    <span>Acompanhe o navegador Chrome aberto</span>
-                                    <span className="text-[#00c47c] font-bold">{loadingProgress}%</span>
+                                    <span>{loadingSubtitulo}</span>
+                                    <span className="text-[#00c47c] font-bold">{progressoArredondado}%</span>
                                 </div>
                             </div>
                         ) : (
